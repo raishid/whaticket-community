@@ -103,6 +103,15 @@ const EmojiBoxStyled = styled("div")({
   borderTop: "1px solid #e8e8e8",
 });
 
+const CircleLoadingStyled = styled(CircularProgress)({
+  color: green[500],
+  opacity: "70%",
+  position: "absolute",
+  top: "20%",
+  left: "50%",
+  marginLeft: -12,
+});
+
 const useStyles = makeStyles((theme: Theme) => ({
   mainWrapper: {
     background: "#eee",
@@ -523,7 +532,7 @@ const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
 
         {loading ? (
           <div>
-            <CircularProgress className={classes.circleLoading} />
+            <CircleLoadingStyled />
           </div>
         ) : (
           <span>
