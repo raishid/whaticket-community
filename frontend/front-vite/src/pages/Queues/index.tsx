@@ -5,7 +5,6 @@ import openSocket from "../../services/socket-io";
 import {
   Button,
   IconButton,
-  makeStyles,
   Paper,
   Table,
   TableBody,
@@ -14,6 +13,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
@@ -28,22 +28,18 @@ import QueueModal from "../../components/QueueModal";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import type { Error } from "../../types/Error";
-import type { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  mainPaper: {
-    flex: 1,
-    padding: theme.spacing(1),
-    overflowY: "scroll",
-    //@ts-ignore
-    ...theme.scrollbarStyles,
-  },
-  customTableCell: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+const MainPaperStyled = styled(Paper)(({ theme }) => ({
+  flex: 1,
+  padding: theme.spacing(1),
+  overflowY: "scroll",
 }));
+
+const CustomTableCellStyled = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+});
 
 interface Queue {
   id: number;
@@ -103,9 +99,6 @@ const reducer = (state: Queue[], action: Action): Queue[] => {
 };
 
 const Queues = () => {
-  //@ts-ignore
-  const classes = useStyles();
-
   const [queues, dispatch] = useReducer(reducer, []);
   const [loading, setLoading] = useState(false);
 
@@ -208,7 +201,7 @@ const Queues = () => {
           </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <Paper className={classes.mainPaper} variant="outlined">
+      <MainPaperStyled variant="outlined">
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -232,7 +225,7 @@ const Queues = () => {
                 <TableRow key={queue.id}>
                   <TableCell align="center">{queue.name}</TableCell>
                   <TableCell align="center">
-                    <div className={classes.customTableCell}>
+                    <CustomTableCellStyled>
                       <span
                         style={{
                           backgroundColor: queue.color,
@@ -241,10 +234,10 @@ const Queues = () => {
                           alignSelf: "center",
                         }}
                       />
-                    </div>
+                    </CustomTableCellStyled>
                   </TableCell>
                   <TableCell align="center">
-                    <div className={classes.customTableCell}>
+                    <CustomTableCellStyled>
                       <Typography
                         style={{
                           width: 300,
@@ -256,7 +249,7 @@ const Queues = () => {
                       >
                         {queue.greetingMessage}
                       </Typography>
-                    </div>
+                    </CustomTableCellStyled>
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
@@ -282,7 +275,7 @@ const Queues = () => {
             </>
           </TableBody>
         </Table>
-      </Paper>
+      </MainPaperStyled>
     </MainContainer>
   );
 };

@@ -3,7 +3,7 @@ import openSocket from "../../services/socket-io";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -35,7 +35,6 @@ import toastError from "../../errors/toastError";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { Can } from "../../components/Can";
 import type { Error } from "../../types/Error";
-import type { Theme } from "@mui/material/styles";
 
 interface Contact {
   id: number;
@@ -96,18 +95,13 @@ const reducer = (state: Contact[], action: Action): Contact[] => {
   return state;
 };
 
-const useStyles = makeStyles((theme: Theme) => ({
-  mainPaper: {
-    flex: 1,
-    padding: theme.spacing(1),
-    overflowY: "scroll",
-    //@ts-ignore
-    // ...theme.scrollbarStyles,
-  },
+const MainPaperStyled = styled(Paper)(({ theme }) => ({
+  flex: 1,
+  padding: theme.spacing(1),
+  overflowY: "scroll",
 }));
 
 const Contacts = () => {
-  const classes = useStyles();
   const navigate = useNavigate();
 
   const authContext = useContext(AuthContext);
@@ -237,8 +231,7 @@ const Contacts = () => {
   };
 
   return (
-    //@ts-ignore
-    <MainContainer className={classes.mainContainer}>
+    <MainContainer>
       <ContactModal
         open={contactModalOpen}
         onClose={handleCloseContactModal}
@@ -297,8 +290,7 @@ const Contacts = () => {
           </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <Paper
-        className={classes.mainPaper}
+      <MainPaperStyled
         variant="outlined"
         onScroll={handleScroll}
       >

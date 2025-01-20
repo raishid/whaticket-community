@@ -22,14 +22,13 @@ import {
 
 import { LockOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 
 import { i18n } from "../../translate/i18n";
 
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import type { Error } from "../../types/Error";
-import type { Theme } from "@mui/material/styles";
 
 // const Copyright = () => {
 // 	return (
@@ -44,24 +43,25 @@ import type { Theme } from "@mui/material/styles";
 // 	);
 // };
 
-const useStyles = makeStyles((theme: Theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: "100%",
-    marginTop: theme.spacing(3),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
+const PaperStyled = styled("div")(({ theme }) => ({
+  marginTop: theme.spacing(8),
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+}));
+
+const AvatarStyled = styled(Avatar)(({ theme }) => ({
+  margin: theme.spacing(1),
+  backgroundColor: theme.palette.secondary.main,
+}));
+
+const FormStyled = styled(Form)(({ theme }) => ({
+  width: "100%",
+  marginTop: theme.spacing(3),
+}));
+
+const SubmitStyled = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(3, 0, 2),
 }));
 
 const UserSchema = Yup.object().shape({
@@ -74,7 +74,6 @@ const UserSchema = Yup.object().shape({
 });
 
 const SignUp = () => {
-  const classes = useStyles();
   const navigate = useNavigate();
 
   const initialState = { name: "", email: "", password: "" };
@@ -98,10 +97,10 @@ const SignUp = () => {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
+      <PaperStyled>
+        <AvatarStyled>
           <LockOutlined />
-        </Avatar>
+        </AvatarStyled>
         <Typography component="h1" variant="h5">
           {i18n.t("signup.title")}
         </Typography>
@@ -118,9 +117,13 @@ const SignUp = () => {
           }}
         >
           {({ touched, errors }) => (
-            <Form className={classes.form}>
+            <FormStyled>
               <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid
+                  size={{
+                    xs: 12,
+                  }}
+                >
                   <Field
                     as={TextField}
                     autoComplete="name"
@@ -135,7 +138,7 @@ const SignUp = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Field
                     as={TextField}
                     variant="outlined"
@@ -148,7 +151,7 @@ const SignUp = () => {
                     autoComplete="email"
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Field
                     as={TextField}
                     variant="outlined"
@@ -175,26 +178,25 @@ const SignUp = () => {
                   />
                 </Grid>
               </Grid>
-              <Button
+              <SubmitStyled
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
-                className={classes.submit}
               >
                 {i18n.t("signup.buttons.submit")}
-              </Button>
+              </SubmitStyled>
               <Grid container justifyContent="flex-end">
-                <Grid item>
+                <Grid>
                   <Link variant="body2" component={RouterLink} to="/login">
                     {i18n.t("signup.buttons.login")}
                   </Link>
                 </Grid>
               </Grid>
-            </Form>
+            </FormStyled>
           )}
         </Formik>
-      </div>
+      </PaperStyled>
       <Box mt={5}>{/* <Copyright /> */}</Box>
     </Container>
   );

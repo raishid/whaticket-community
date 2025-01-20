@@ -2,8 +2,8 @@ import { useContext } from "react";
 
 import Paper from "@mui/material/Paper";
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import { makeStyles } from "@mui/styles";
+import Grid from "@mui/material/Grid2";
+import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 
 import useTickets from "../../hooks/useTickets";
@@ -13,39 +13,29 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 import { i18n } from "../../translate/i18n";
 
 import Chart from "./Chart";
-import type { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-  fixedHeightPaper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-    height: 240,
-  },
-  customFixedHeightPaper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-    height: 120,
-  },
-  customFixedHeightPaperLg: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-    height: "100%",
-  },
+const ContainerStyled = styled(Container)(({ theme }) => ({
+  paddingTop: theme.spacing(4),
+  paddingBottom: theme.spacing(4),
+}));
+
+const FixedHeightPaperStyled = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  display: "flex",
+  overflow: "auto",
+  flexDirection: "column",
+  height: 240,
+}));
+
+const CustomFixedHeightPaperStyled = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  display: "flex",
+  overflow: "auto",
+  flexDirection: "column",
+  height: 120,
 }));
 
 const Dashboard = () => {
-  const classes = useStyles();
-
   const authContext = useContext(AuthContext);
   const user = authContext ? authContext.user : null;
   var userQueueIds: number[] = [];
@@ -70,60 +60,67 @@ const Dashboard = () => {
 
   return (
     <div>
-      <Container maxWidth="lg" className={classes.container}>
+      <ContainerStyled maxWidth="lg">
         <Grid container spacing={3}>
-          <Grid item xs={4}>
-            <Paper
-              className={classes.customFixedHeightPaper}
-              style={{ overflow: "hidden" }}
-            >
+          <Grid
+            size={{
+              xs: 4,
+            }}
+          >
+            <CustomFixedHeightPaperStyled style={{ overflow: "hidden" }}>
               <Typography component="h3" variant="h6" color="primary" paragraph>
                 {i18n.t("dashboard.messages.inAttendance.title")}
               </Typography>
-              <Grid item>
+              <Grid>
                 <Typography component="h1" variant="h4">
                   {GetTickets("open", "true", "false")}
                 </Typography>
               </Grid>
-            </Paper>
+            </CustomFixedHeightPaperStyled>
           </Grid>
-          <Grid item xs={4}>
-            <Paper
-              className={classes.customFixedHeightPaper}
-              style={{ overflow: "hidden" }}
-            >
+          <Grid
+            size={{
+              xs: 4,
+            }}
+          >
+            <CustomFixedHeightPaperStyled style={{ overflow: "hidden" }}>
               <Typography component="h3" variant="h6" color="primary" paragraph>
                 {i18n.t("dashboard.messages.waiting.title")}
               </Typography>
-              <Grid item>
+              <Grid>
                 <Typography component="h1" variant="h4">
                   {GetTickets("pending", "true", "false")}
                 </Typography>
               </Grid>
-            </Paper>
+            </CustomFixedHeightPaperStyled>
           </Grid>
-          <Grid item xs={4}>
-            <Paper
-              className={classes.customFixedHeightPaper}
-              style={{ overflow: "hidden" }}
-            >
+          <Grid
+            size={{
+              xs: 4,
+            }}
+          >
+            <CustomFixedHeightPaperStyled style={{ overflow: "hidden" }}>
               <Typography component="h3" variant="h6" color="primary" paragraph>
                 {i18n.t("dashboard.messages.closed.title")}
               </Typography>
-              <Grid item>
+              <Grid>
                 <Typography component="h1" variant="h4">
                   {GetTickets("closed", "true", "false")}
                 </Typography>
               </Grid>
-            </Paper>
+            </CustomFixedHeightPaperStyled>
           </Grid>
-          <Grid item xs={12}>
-            <Paper className={classes.fixedHeightPaper}>
+          <Grid
+            size={{
+              xs: 12,
+            }}
+          >
+            <FixedHeightPaperStyled>
               <Chart />
-            </Paper>
+            </FixedHeightPaperStyled>
           </Grid>
         </Grid>
-      </Container>
+      </ContainerStyled>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { useState, useEffect, useReducer } from "react";
 import { toast } from "react-toastify";
 import openSocket from "../../services/socket-io";
 
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
@@ -30,7 +30,6 @@ import UserModal from "../../components/UserModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import toastError from "../../errors/toastError";
 import type { Error } from "../../types/Error";
-import type { Theme } from "@mui/material/styles";
 
 interface User {
   id: number;
@@ -91,19 +90,15 @@ const reducer = (state: User[], action: Action): User[] => {
   return state;
 };
 
-const useStyles = makeStyles((theme: Theme) => ({
+const MainPaperStyled = styled(Paper)(({ theme }) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    //@ts-ignore
-    ...theme.scrollbarStyles,
   },
 }));
 
 const Users = () => {
-  const classes = useStyles();
-
   const [loading, setLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -246,11 +241,7 @@ const Users = () => {
           </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <Paper
-        className={classes.mainPaper}
-        variant="outlined"
-        onScroll={handleScroll}
-      >
+      <MainPaperStyled variant="outlined" onScroll={handleScroll}>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -301,7 +292,7 @@ const Users = () => {
             </>
           </TableBody>
         </Table>
-      </Paper>
+      </MainPaperStyled>
     </MainContainer>
   );
 };

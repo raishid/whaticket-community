@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import openSocket from "../../services/socket-io";
 
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -13,33 +13,21 @@ import api from "../../services/api";
 import { i18n } from "../../translate/i18n.js";
 import toastError from "../../errors/toastError";
 import type { Error } from "../../types/Error.js";
-import type { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(8, 8, 3),
-  },
+const RootStyled = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(8, 8, 3),
+}));
 
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-
-  settingOption: {
-    marginLeft: "auto",
-  },
-  margin: {
-    margin: theme.spacing(1),
-  },
+const PaperStyled = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  display: "flex",
+  alignItems: "center",
+  marginBottom: 12,
 }));
 
 const Settings = () => {
-  const classes = useStyles();
-
   interface Setting {
     key: string;
     value: string;
@@ -100,13 +88,12 @@ const Settings = () => {
   };
 
   return (
-    <div className={classes.root}>
-      {/* @ts-ignore */}
-      <Container className={classes.container} maxWidth="sm">
+    <RootStyled>
+      <Container maxWidth="sm">
         <Typography variant="body2" gutterBottom>
           {i18n.t("settings.title")}
         </Typography>
-        <Paper className={classes.paper}>
+        <PaperStyled>
           <Typography variant="body1">
             {i18n.t("settings.settings.userCreation.name")}
           </Typography>
@@ -119,7 +106,9 @@ const Settings = () => {
             value={
               settings && settings.length > 0 && getSettingValue("userCreation")
             }
-            className={classes.settingOption}
+            sx={{
+              marginLeft: "auto",
+            }}
             onChange={handleChangeSetting}
           >
             <option value="enabled">
@@ -129,9 +118,9 @@ const Settings = () => {
               {i18n.t("settings.settings.userCreation.options.disabled")}
             </option>
           </Select>
-        </Paper>
+        </PaperStyled>
 
-        <Paper className={classes.paper}>
+        <PaperStyled>
           <TextField
             disabled
             id="api-token-setting"
@@ -143,9 +132,9 @@ const Settings = () => {
               settings && settings.length > 0 && getSettingValue("userApiToken")
             }
           />
-        </Paper>
+        </PaperStyled>
       </Container>
-    </div>
+    </RootStyled>
   );
 };
 

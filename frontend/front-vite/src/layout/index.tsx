@@ -1,7 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import clsx from "clsx";
 import {
-  makeStyles,
   Drawer,
   AppBar,
   Toolbar,
@@ -13,6 +11,7 @@ import {
   Menu,
   Switch,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -26,56 +25,85 @@ import BackdropLoading from "../components/BackdropLoading";
 import { i18n } from "../translate/i18n";
 import { useThemeContext } from "../context/DarkMode";
 import type { ReactNode } from "react";
-import type { Theme } from "@mui/material/styles";
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: "flex",
-    height: "100vh",
-    [theme.breakpoints.down("sm")]: {
-      height: "calc(100vh - 56px)",
-    },
+const RootStyles = styled("div")(({ theme }) => ({
+  display: "flex",
+  height: "100vh",
+  [theme.breakpoints.down("sm")]: {
+    height: "calc(100vh - 56px)",
   },
-  toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
-  },
-  toolbarIcon: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: "0 8px",
-    minHeight: "48px",
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    backgroundColor: theme.palette.background.default,
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {
-    marginRight: 36,
+}));
+
+const ToolbarStyled = styled(Toolbar)({
+  paddingRight: 24,
+});
+
+const ToolbarIconStyled = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  padding: "0 8px",
+  minHeight: "48px",
+});
+
+const AppBarStyled = styled(AppBar)(({ theme }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(["width", "margin"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  backgroundColor: theme.palette.background.default,
+}));
+
+const ContentStyled = styled("main")({
+  flex: 1,
+  overflow: "auto",
+});
+
+const SwitchStyled = styled(Switch)({
+  transform: "scale(0.8)",
+});
+
+const TitleStyled = styled(Typography)(({ theme }) => ({
+  flexGrow: 1,
+  color: theme.palette.text.primary,
+}));
+
+const AppBarSpacerStyled = styled("div")({
+  minHeight: "48px",
+});
+
+const IconButtonStyled = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.text.primary,
+}));
+
+const NotificationsPopOverStyled = styled(NotificationsPopOver)(
+  ({ theme }) => ({
     color: theme.palette.text.primary,
-  },
-  menuButtonHidden: {
-    display: "none",
-  },
-  title: {
-    flexGrow: 1,
-    color: theme.palette.text.primary,
-  },
-  drawerPaper: {
+  })
+);
+
+const ThemeSwitchContainerStyled = styled("div")({
+  display: "flex",
+  alignItems: "center",
+});
+
+const ThemeIconStyled = styled(Brightness4Icon)(({ theme }) => ({
+  color: theme.palette.text.primary,
+}));
+
+const DrawerPaperStyled = styled(Drawer)(({ theme }) => ({
+  position: "relative",
+  whiteSpace: "nowrap",
+  width: drawerWidth,
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  backgroundColor: theme.palette.background.paper,
+  "& .MuiDrawer-paper": {
     position: "relative",
     whiteSpace: "nowrap",
     width: drawerWidth,
@@ -85,7 +113,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     }),
     backgroundColor: theme.palette.background.paper,
   },
-  drawerPaperClose: {
+}));
+
+const DrawerPaperStyledClose = styled(Drawer)(({ theme }) => ({
+  overflowX: "hidden",
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  width: theme.spacing(7),
+  [theme.breakpoints.up("sm")]: {
+    width: theme.spacing(9),
+  },
+  "& .MuiDrawer-paper": {
     overflowX: "hidden",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
@@ -96,41 +136,27 @@ const useStyles = makeStyles((theme: Theme) => ({
       width: theme.spacing(9),
     },
   },
-  appBarSpacer: {
-    minHeight: "48px",
-  },
-  content: {
-    flex: 1,
-    overflow: "auto",
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-  },
-  switch: {
-    transform: "scale(0.8)",
-  },
-  iconButton: {
-    color: theme.palette.text.primary,
-  },
-  themeSwitchContainer: {
-    display: "flex",
-    alignItems: "center",
-  },
-  themeIcon: {
-    color: theme.palette.text.primary,
-  },
 }));
 
+const AppBarShiftStyled = styled(AppBar)(({ theme }) => ({
+  marginLeft: drawerWidth,
+  width: `calc(100% - ${drawerWidth}px)`,
+  transition: theme.transitions.create(["width", "margin"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+}));
+
+const MenuButtonStyled = styled(IconButton)(({ theme }) => ({
+  marginRight: 36,
+  color: theme.palette.text.primary,
+}));
+
+const MenuButtonHiddenStyled = styled(IconButton)({
+  display: "none",
+});
+
 const LoggedInLayout = ({ children }: { children: ReactNode }) => {
-  //@ts-ignore
-  const classes = useStyles();
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -189,81 +215,81 @@ const LoggedInLayout = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <div className={classes.root}>
-      <Drawer
-        variant={drawerVariant}
-        className={drawerOpen ? classes.drawerPaper : classes.drawerPaperClose}
-        classes={{
-          paper: clsx(
-            classes.drawerPaper,
-            !drawerOpen && classes.drawerPaperClose
-          ),
-        }}
-        open={drawerOpen}
-      >
-        <div className={classes.toolbarIcon}>
+    <RootStyles>
+      {drawerOpen} ? (
+      <DrawerPaperStyled>
+        <ToolbarIconStyled>
           <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
             <ChevronLeftIcon />
           </IconButton>
-        </div>
+        </ToolbarIconStyled>
         <Divider />
         <List>
           <MainListItems drawerClose={drawerClose} />
         </List>
         <Divider />
-      </Drawer>
+      </DrawerPaperStyled>
+      ) : (
+      <DrawerPaperStyledClose>
+        <ToolbarIconStyled>
+          <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
+            <ChevronLeftIcon />
+          </IconButton>
+        </ToolbarIconStyled>
+        <Divider />
+        <List>
+          <MainListItems drawerClose={drawerClose} />
+        </List>
+        <Divider />
+      </DrawerPaperStyledClose>
+      )
       <UserModal
         open={userModalOpen}
         onClose={() => setUserModalOpen(false)}
         userId={user?.id}
       />
-      <AppBar
-        position="absolute"
-        className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}
-      >
-        <Toolbar variant="dense" className={classes.toolbar}>
-          <IconButton
+      {drawerOpen} ? (
+      <AppBarShiftStyled>
+        <ToolbarStyled variant="dense">
+          {drawerOpen} ? (
+          <MenuButtonHiddenStyled
             edge="start"
             aria-label="open drawer"
             onClick={() => setDrawerOpen(!drawerOpen)}
-            className={clsx(
-              classes.menuButton,
-              drawerOpen && classes.menuButtonHidden
-            )}
           >
             <MenuIcon />
-          </IconButton>
-          <Typography
-            component="h1"
-            variant="h6"
-            noWrap
-            className={classes.title}
+          </MenuButtonHiddenStyled>
+          ): (
+          <MenuButtonStyled
+            edge="start"
+            aria-label="open drawer"
+            onClick={() => setDrawerOpen(!drawerOpen)}
           >
+            <MenuIcon />
+          </MenuButtonStyled>
+          )
+          <TitleStyled component="h1" variant="h6" noWrap>
             WhaTicket
-          </Typography>
-
-          <div className={classes.themeSwitchContainer}>
-            <Brightness4Icon className={classes.themeIcon} />
-            <Switch
+          </TitleStyled>
+          <ThemeSwitchContainerStyled>
+            <ThemeIconStyled />
+            <SwitchStyled
               checked={darkMode}
               onChange={toggleTheme}
               color="default"
-              className={classes.switch}
             />
-          </div>
+          </ThemeSwitchContainerStyled>
           {/* @ts-ignore */}
-          {user.id && <NotificationsPopOver className={classes.iconButton} />}
-
+          {user.id && <NotificationsPopOverStyled />}
           <div>
-            <IconButton
+            <IconButtonStyled
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleMenu}
-              className={classes.iconButton}
             >
               <AccountCircle />
-            </IconButton>
+            </IconButtonStyled>
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
@@ -287,13 +313,81 @@ const LoggedInLayout = ({ children }: { children: ReactNode }) => {
               </MenuItem>
             </Menu>
           </div>
-        </Toolbar>
-      </AppBar>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
+        </ToolbarStyled>
+      </AppBarShiftStyled>
+      ) : (
+      <AppBarStyled>
+        <ToolbarStyled variant="dense">
+          {drawerOpen} ? (
+          <MenuButtonHiddenStyled
+            edge="start"
+            aria-label="open drawer"
+            onClick={() => setDrawerOpen(!drawerOpen)}
+          >
+            <MenuIcon />
+          </MenuButtonHiddenStyled>
+          ): (
+          <MenuButtonStyled
+            edge="start"
+            aria-label="open drawer"
+            onClick={() => setDrawerOpen(!drawerOpen)}
+          >
+            <MenuIcon />
+          </MenuButtonStyled>
+          )
+          <TitleStyled component="h1" variant="h6" noWrap>
+            WhaTicket
+          </TitleStyled>
+          <ThemeSwitchContainerStyled>
+            <ThemeIconStyled />
+            <SwitchStyled
+              checked={darkMode}
+              onChange={toggleTheme}
+              color="default"
+            />
+          </ThemeSwitchContainerStyled>
+          {/* @ts-ignore */}
+          {user.id && <NotificationsPopOverStyled />}
+          <div>
+            <IconButtonStyled
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+            >
+              <AccountCircle />
+            </IconButtonStyled>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              // getContentAnchorEl={null}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={menuOpen}
+              onClose={handleCloseMenu}
+            >
+              <MenuItem onClick={handleOpenUserModal}>
+                {i18n.t("mainDrawer.appBar.user.profile")}
+              </MenuItem>
+              <MenuItem onClick={handleClickLogout}>
+                {i18n.t("mainDrawer.appBar.user.logout")}
+              </MenuItem>
+            </Menu>
+          </div>
+        </ToolbarStyled>
+      </AppBarStyled>
+      )
+      <ContentStyled>
+        <AppBarSpacerStyled />
         {children ? children : null}
-      </main>
-    </div>
+      </ContentStyled>
+    </RootStyles>
   );
 };
 

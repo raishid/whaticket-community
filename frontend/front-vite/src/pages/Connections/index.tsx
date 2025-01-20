@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext } from "react";
 import { toast } from "react-toastify";
 import { format, parseISO } from "date-fns";
 
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { green } from "@mui/material/colors";
 import {
   Button,
@@ -41,35 +41,35 @@ import { i18n } from "../../translate/i18n";
 import { WhatsAppsContext } from "../../context/WhatsApp/WhatsAppsContext";
 import toastError from "../../errors/toastError";
 import type { Error } from "../../types/Error";
-import type { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  mainPaper: {
-    flex: 1,
-    padding: theme.spacing(1),
-    overflowY: "scroll",
-    //@ts-ignore
-    // ...theme.scrollbarStyles,
-  },
-  customTableCell: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  tooltip: {
+const MainPaperStyled = styled(Paper)(({ theme }) => ({
+  flex: 1,
+  padding: theme.spacing(1),
+  overflowY: "scroll",
+}));
+
+const CustomTableCellStyled = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+});
+
+const TooltipStyled = styled(Tooltip)(({ theme }) => ({
+  "& .MuiTooltip-tooltip": {
     backgroundColor: "#f5f5f9",
     color: "rgba(0, 0, 0, 0.87)",
     fontSize: theme.typography.pxToRem(14),
     border: "1px solid #dadde9",
     maxWidth: 450,
   },
-  tooltipPopper: {
+  "& .MuiTooltip-popper": {
     textAlign: "center",
   },
-  buttonProgress: {
-    color: green[500],
-  },
 }));
+
+const ButtonProgressStyled = styled(CircularProgress)({
+  color: green[500],
+});
 
 interface CustomToolTipProps {
   title: string;
@@ -82,15 +82,9 @@ const CustomToolTip: React.FC<CustomToolTipProps> = ({
   content,
   children,
 }) => {
-  const classes = useStyles();
-
   return (
-    <Tooltip
+    <TooltipStyled
       arrow
-      classes={{
-        tooltip: classes.tooltip,
-        popper: classes.tooltipPopper,
-      }}
       title={
         <React.Fragment>
           <Typography gutterBottom color="inherit">
@@ -101,13 +95,11 @@ const CustomToolTip: React.FC<CustomToolTipProps> = ({
       }
     >
       {<>{children}</>}
-    </Tooltip>
+    </TooltipStyled>
   );
 };
 
 const Connections = () => {
-  const classes = useStyles();
-
   const { whatsApps, loading } = useContext(WhatsAppsContext);
   const [whatsAppModalOpen, setWhatsAppModalOpen] = useState(false);
   const [qrModalOpen, setQrModalOpen] = useState(false);
@@ -267,7 +259,7 @@ const Connections = () => {
 
   const renderStatusToolTips = (whatsApp: any) => {
     return (
-      <div className={classes.customTableCell}>
+      <CustomTableCellStyled>
         {whatsApp.status === "DISCONNECTED" && (
           <CustomToolTip
             title={i18n.t("connections.toolTips.disconnected.title")}
@@ -276,9 +268,7 @@ const Connections = () => {
             <SignalCellularConnectedNoInternet0Bar color="secondary" />
           </CustomToolTip>
         )}
-        {whatsApp.status === "OPENING" && (
-          <CircularProgress size={24} className={classes.buttonProgress} />
-        )}
+        {whatsApp.status === "OPENING" && <ButtonProgressStyled size={24} />}
         {whatsApp.status === "qrcode" && (
           <CustomToolTip
             title={i18n.t("connections.toolTips.qrcode.title")}
@@ -300,7 +290,7 @@ const Connections = () => {
             <SignalCellularConnectedNoInternet2Bar color="secondary" />
           </CustomToolTip>
         )}
-      </div>
+      </CustomTableCellStyled>
     );
   };
 
@@ -336,7 +326,7 @@ const Connections = () => {
           </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <Paper className={classes.mainPaper} variant="outlined">
+      <MainPaperStyled variant="outlined">
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -380,9 +370,9 @@ const Connections = () => {
                       </TableCell>
                       <TableCell align="center">
                         {whatsApp.isDefault && (
-                          <div className={classes.customTableCell}>
+                          <CustomTableCellStyled>
                             <CheckCircle style={{ color: green[500] }} />
-                          </div>
+                          </CustomTableCellStyled>
                         )}
                       </TableCell>
                       <TableCell align="center">
@@ -408,7 +398,7 @@ const Connections = () => {
             )}
           </TableBody>
         </Table>
-      </Paper>
+      </MainPaperStyled>
     </MainContainer>
   );
 };

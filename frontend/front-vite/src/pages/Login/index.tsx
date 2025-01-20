@@ -17,12 +17,11 @@ import {
 
 import { LockOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 
 import { i18n } from "../../translate/i18n";
 
 import { AuthContext } from "../../context/Auth/AuthContext";
-import type { Theme } from "@mui/material/styles";
 
 // const Copyright = () => {
 // 	return (
@@ -37,29 +36,28 @@ import type { Theme } from "@mui/material/styles";
 // 	);
 // };
 
-const useStyles = makeStyles((theme: Theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
+const PaperStyled = styled("div")(({ theme }) => ({
+  marginTop: theme.spacing(8),
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+}));
+
+const AvatarStyled = styled(Avatar)(({ theme }) => ({
+  margin: theme.spacing(1),
+  backgroundColor: theme.palette.secondary.main,
+}));
+
+const FormStyled = styled("form")(({ theme }) => ({
+  width: "100%", // Fix IE 11 issue.
+  marginTop: theme.spacing(1),
+}));
+
+const SubmitStyled = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(3, 0, 2),
 }));
 
 const Login = () => {
-  const classes = useStyles();
-
   const [user, setUser] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
@@ -79,14 +77,14 @@ const Login = () => {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
+      <PaperStyled>
+        <AvatarStyled>
           <LockOutlined />
-        </Avatar>
+        </AvatarStyled>
         <Typography component="h1" variant="h5">
           {i18n.t("login.title")}
         </Typography>
-        <form className={classes.form} noValidate onSubmit={handlSubmit}>
+        <FormStyled noValidate onSubmit={handlSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -125,15 +123,14 @@ const Login = () => {
               ),
             }}
           />
-          <Button
+          <SubmitStyled
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
-            className={classes.submit}
           >
             {i18n.t("login.buttons.submit")}
-          </Button>
+          </SubmitStyled>
           <Grid container>
             <Grid>
               <Link variant="body2" component={RouterLink} to="/signup">
@@ -141,8 +138,8 @@ const Login = () => {
               </Link>
             </Grid>
           </Grid>
-        </form>
-      </div>
+        </FormStyled>
+      </PaperStyled>
       <Box mt={8}>{/* <Copyright /> */}</Box>
     </Container>
   );
