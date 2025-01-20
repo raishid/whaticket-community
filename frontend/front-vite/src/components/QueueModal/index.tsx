@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { Formik, Form, Field } from "formik";
 import { toast } from "react-toastify";
 
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { green } from "@mui/material/colors";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -22,39 +22,34 @@ import ColorPicker from "../ColorPicker";
 import { IconButton, InputAdornment } from "@mui/material";
 import { Colorize } from "@mui/icons-material";
 import type { Error } from "../../types/Error";
-import type { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-  textField: {
-    marginRight: theme.spacing(1),
-    flex: 1,
-  },
+const RootStyled = styled("div")({
+  display: "flex",
+  flexWrap: "wrap",
+});
 
-  btnWrapper: {
-    position: "relative",
-  },
-
-  buttonProgress: {
-    color: green[500],
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    marginTop: -12,
-    marginLeft: -12,
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  colorAdorment: {
-    width: 20,
-    height: 20,
-  },
+const TextFieldStyled = styled(TextField)(({ theme }) => ({
+  marginRight: theme.spacing(1),
+  flex: 1,
 }));
+
+const BtnWrapperStyled = styled(Button)({
+  position: "relative",
+});
+
+const ButtonProgressStyled = styled(CircularProgress)({
+  color: green[500],
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  marginTop: -12,
+  marginLeft: -12,
+});
+
+const ColorAdormentStyled = styled("div")({
+  width: 20,
+  height: 20,
+});
 
 const QueueSchema = Yup.object().shape({
   name: Yup.string()
@@ -72,8 +67,6 @@ interface QueueModalProps {
 }
 
 const QueueModal: React.FC<QueueModalProps> = ({ open, onClose, queueId }) => {
-  const classes = useStyles();
-
   const initialState = {
     name: "",
     color: "",
@@ -130,7 +123,7 @@ const QueueModal: React.FC<QueueModalProps> = ({ open, onClose, queueId }) => {
   };
 
   return (
-    <div className={classes.root}>
+    <RootStyled>
       <Dialog open={open} onClose={handleClose} scroll="paper">
         <DialogTitle>
           {queueId
@@ -152,7 +145,7 @@ const QueueModal: React.FC<QueueModalProps> = ({ open, onClose, queueId }) => {
             <Form>
               <DialogContent dividers>
                 <Field
-                  as={TextField}
+                  as={TextFieldStyled}
                   label={i18n.t("queueModal.form.name")}
                   autoFocus
                   name="name"
@@ -160,7 +153,6 @@ const QueueModal: React.FC<QueueModalProps> = ({ open, onClose, queueId }) => {
                   helperText={touched.name && errors.name}
                   variant="outlined"
                   margin="dense"
-                  className={classes.textField}
                 />
                 <Field
                   as={TextField}
@@ -178,10 +170,9 @@ const QueueModal: React.FC<QueueModalProps> = ({ open, onClose, queueId }) => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <div
+                        <ColorAdormentStyled
                           style={{ backgroundColor: values.color }}
-                          className={classes.colorAdorment}
-                        ></div>
+                        ></ColorAdormentStyled>
                       </InputAdornment>
                     ),
                     endAdornment: (
@@ -238,29 +229,23 @@ const QueueModal: React.FC<QueueModalProps> = ({ open, onClose, queueId }) => {
                 >
                   {i18n.t("queueModal.buttons.cancel")}
                 </Button>
-                <Button
+                <BtnWrapperStyled
                   type="submit"
                   color="primary"
                   disabled={isSubmitting}
                   variant="contained"
-                  className={classes.btnWrapper}
                 >
                   {queueId
                     ? `${i18n.t("queueModal.buttons.okEdit")}`
                     : `${i18n.t("queueModal.buttons.okAdd")}`}
-                  {isSubmitting && (
-                    <CircularProgress
-                      size={24}
-                      className={classes.buttonProgress}
-                    />
-                  )}
-                </Button>
+                  {isSubmitting && <ButtonProgressStyled size={24} />}
+                </BtnWrapperStyled>
               </DialogActions>
             </Form>
           )}
         </Formik>
       </Dialog>
-    </div>
+    </RootStyled>
   );
 };
 

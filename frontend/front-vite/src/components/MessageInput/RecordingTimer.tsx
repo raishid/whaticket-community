@@ -1,17 +1,14 @@
 import { useState, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 
-const useStyles = makeStyles(() => ({
-  timerBox: {
-    display: "flex",
-    marginLeft: 10,
-    marginRight: 10,
-    alignItems: "center",
-  },
-}));
+const TimerBoxStyled = styled("div")({
+  display: "flex",
+  marginLeft: 10,
+  marginRight: 10,
+  alignItems: "center",
+});
 
 const RecordingTimer = () => {
-  const classes = useStyles();
   const initialState = {
     minutes: 0,
     seconds: 0,
@@ -39,9 +36,9 @@ const RecordingTimer = () => {
   };
 
   return (
-    <div className={classes.timerBox}>
+    <TimerBoxStyled>
       <span>{`${addZero(timer.minutes)}:${addZero(timer.seconds)}`}</span>
-    </div>
+    </TimerBoxStyled>
   );
 };
 

@@ -5,7 +5,6 @@ import { Formik, Form, Field } from "formik";
 import { toast } from "react-toastify";
 
 import {
-  makeStyles,
   Button,
   TextField,
   Dialog,
@@ -14,39 +13,39 @@ import {
   DialogTitle,
   CircularProgress,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { green } from "@mui/material/colors";
 import { i18n } from "../../translate/i18n";
 
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import type { Error } from "../../types/Error";
-import type { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    flexWrap: "wrap",
-  },
-  textField: {
-    marginRight: theme.spacing(1),
-    width: "100%",
-  },
+const RootStyled = styled("div")({
+  flexWrap: "wrap",
+});
 
-  btnWrapper: {
-    position: "relative",
-  },
-
-  buttonProgress: {
-    color: green[500],
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    marginTop: -12,
-    marginLeft: -12,
-  },
-  textQuickAnswerContainer: {
-    width: "100%",
-  },
+const TextFieldStyled = styled(TextField)(({ theme }) => ({
+  marginRight: theme.spacing(1),
+  width: "100%",
 }));
+
+const BtnWrapperStyled = styled(Button)({
+  position: "relative",
+});
+
+const ButtonProgressStyled = styled(CircularProgress)({
+  color: green[500],
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  marginTop: -12,
+  marginLeft: -12,
+});
+
+const TextQuickAnswerContainerStyled = styled("div")({
+  width: "100%",
+});
 
 const QuickAnswerSchema = Yup.object().shape({
   shortcut: Yup.string()
@@ -74,8 +73,6 @@ const QuickAnswersModal: React.FC<QuickAnswersModalProps> = ({
   initialValues,
   onSave,
 }) => {
-  //@ts-ignore
-  const classes = useStyles();
   const isMounted = useRef(true);
 
   const initialState = {
@@ -141,7 +138,7 @@ const QuickAnswersModal: React.FC<QuickAnswersModalProps> = ({
   };
 
   return (
-    <div className={classes.root}>
+    <RootStyled>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -168,9 +165,9 @@ const QuickAnswersModal: React.FC<QuickAnswersModalProps> = ({
           {({ errors, touched, isSubmitting }) => (
             <Form>
               <DialogContent dividers>
-                <div className={classes.textQuickAnswerContainer}>
+                <TextQuickAnswerContainerStyled>
                   <Field
-                    as={TextField}
+                    as={TextFieldStyled}
                     label={i18n.t("quickAnswersModal.form.shortcut")}
                     name="shortcut"
                     autoFocus
@@ -178,25 +175,23 @@ const QuickAnswersModal: React.FC<QuickAnswersModalProps> = ({
                     helperText={touched.shortcut && errors.shortcut}
                     variant="outlined"
                     margin="dense"
-                    className={classes.textField}
                     fullWidth
                   />
-                </div>
-                <div className={classes.textQuickAnswerContainer}>
+                </TextQuickAnswerContainerStyled>
+                <TextQuickAnswerContainerStyled>
                   <Field
-                    as={TextField}
+                    as={TextFieldStyled}
                     label={i18n.t("quickAnswersModal.form.message")}
                     name="message"
                     error={touched.message && Boolean(errors.message)}
                     helperText={touched.message && errors.message}
                     variant="outlined"
                     margin="dense"
-                    className={classes.textField}
                     multiline
                     rows={5}
                     fullWidth
                   />
-                </div>
+                </TextQuickAnswerContainerStyled>
               </DialogContent>
               <DialogActions>
                 <Button
@@ -207,29 +202,23 @@ const QuickAnswersModal: React.FC<QuickAnswersModalProps> = ({
                 >
                   {i18n.t("quickAnswersModal.buttons.cancel")}
                 </Button>
-                <Button
+                <BtnWrapperStyled
                   type="submit"
                   color="primary"
                   disabled={isSubmitting}
                   variant="contained"
-                  className={classes.btnWrapper}
                 >
                   {quickAnswerId
                     ? `${i18n.t("quickAnswersModal.buttons.okEdit")}`
                     : `${i18n.t("quickAnswersModal.buttons.okAdd")}`}
-                  {isSubmitting && (
-                    <CircularProgress
-                      size={24}
-                      className={classes.buttonProgress}
-                    />
-                  )}
-                </Button>
+                  {isSubmitting && <ButtonProgressStyled size={24} />}
+                </BtnWrapperStyled>
               </DialogActions>
             </Form>
           )}
         </Formik>
       </Dialog>
-    </div>
+    </RootStyled>
   );
 };
 

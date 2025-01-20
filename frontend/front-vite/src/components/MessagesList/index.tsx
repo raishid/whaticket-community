@@ -2,16 +2,9 @@ import React, { useState, useEffect, useReducer, useRef } from "react";
 
 import { isSameDay, parseISO, format } from "date-fns";
 import openSocket from "../../services/socket-io";
-import clsx from "clsx";
 
 import { green } from "@mui/material/colors";
-import {
-  Button,
-  CircularProgress,
-  Divider,
-  IconButton,
-  makeStyles,
-} from "@mui/material";
+import { Button, CircularProgress, Divider, IconButton } from "@mui/material";
 import {
   AccessTime,
   Block,
@@ -20,6 +13,7 @@ import {
   ExpandMore,
   GetApp,
 } from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
 
 import MarkdownWrapper from "../MarkdownWrapper";
 import VcardPreview from "../VcardPreview";
@@ -32,236 +26,232 @@ import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import Audio from "../Audio";
 import type { Error } from "../../types/Error";
-import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  messagesListWrapper: {
-    overflow: "hidden",
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    flexGrow: 1,
-  },
+const MessagesListWrapperStyled = styled("div")({
+  overflow: "hidden",
+  position: "relative",
+  display: "flex",
+  flexDirection: "column",
+  flexGrow: 1,
+});
 
-  messagesList: {
-    backgroundImage: `url(${whatsBackground})`,
-    display: "flex",
-    flexDirection: "column",
-    flexGrow: 1,
-    padding: "20px 20px 20px 20px",
-    overflowY: "scroll",
-    [theme.breakpoints.down("sm")]: {
-      paddingBottom: "90px",
-    },
-    //...theme.scrollbarStyles,
-  },
-
-  circleLoading: {
-    color: green[500],
-    position: "absolute",
-    opacity: "70%",
-    top: 0,
-    left: "50%",
-    marginTop: 12,
-  },
-
-  messageLeft: {
-    marginRight: 20,
-    marginTop: 2,
-    minWidth: 100,
-    maxWidth: 600,
-    height: "auto",
-    display: "block",
-    position: "relative",
-    "&:hover #messageActionsButton": {
-      display: "flex",
-      position: "absolute",
-      top: 0,
-      right: 0,
-    },
-
-    whiteSpace: "pre-wrap",
-    backgroundColor: "#ffffff",
-    color: "#303030",
-    alignSelf: "flex-start",
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 8,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    paddingLeft: 5,
-    paddingRight: 5,
-    paddingTop: 5,
-    paddingBottom: 0,
-    boxShadow: "0 1px 1px #b3b3b3",
-  },
-
-  quotedContainerLeft: {
-    margin: "-3px -80px 6px -6px",
-    overflow: "hidden",
-    backgroundColor: "#f0f0f0",
-    borderRadius: "7.5px",
-    display: "flex",
-    position: "relative",
-  },
-
-  quotedMsg: {
-    padding: 10,
-    maxWidth: 300,
-    height: "auto",
-    display: "block",
-    whiteSpace: "pre-wrap",
-    overflow: "hidden",
-  },
-
-  quotedSideColorLeft: {
-    flex: "none",
-    width: "4px",
-    backgroundColor: "#6bcbef",
-  },
-
-  messageRight: {
-    marginLeft: 20,
-    marginTop: 2,
-    minWidth: 100,
-    maxWidth: 600,
-    height: "auto",
-    display: "block",
-    position: "relative",
-    "&:hover #messageActionsButton": {
-      display: "flex",
-      position: "absolute",
-      top: 0,
-      right: 0,
-    },
-
-    whiteSpace: "pre-wrap",
-    backgroundColor: "#dcf8c6",
-    color: "#303030",
-    alignSelf: "flex-end",
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 0,
-    paddingLeft: 5,
-    paddingRight: 5,
-    paddingTop: 5,
-    paddingBottom: 0,
-    boxShadow: "0 1px 1px #b3b3b3",
-  },
-
-  quotedContainerRight: {
-    margin: "-3px -80px 6px -6px",
-    overflowY: "hidden",
-    backgroundColor: "#cfe9ba",
-    borderRadius: "7.5px",
-    display: "flex",
-    position: "relative",
-  },
-
-  quotedMsgRight: {
-    padding: 10,
-    maxWidth: 300,
-    height: "auto",
-    whiteSpace: "pre-wrap",
-  },
-
-  quotedSideColorRight: {
-    flex: "none",
-    width: "4px",
-    backgroundColor: "#35cd96",
-  },
-
-  messageActionsButton: {
-    display: "none",
-    position: "relative",
-    color: "#999",
-    zIndex: 1,
-    backgroundColor: "inherit",
-    opacity: "90%",
-    "&:hover, &.Mui-focusVisible": { backgroundColor: "inherit" },
-  },
-
-  messageContactName: {
-    display: "flex",
-    color: "#6bcbef",
-    fontWeight: 500,
-  },
-
-  textContentItem: {
-    overflowWrap: "break-word",
-    padding: "3px 80px 6px 6px",
-  },
-
-  textContentItemDeleted: {
-    fontStyle: "italic",
-    color: "rgba(0, 0, 0, 0.36)",
-    overflowWrap: "break-word",
-    padding: "3px 80px 6px 6px",
-  },
-
-  messageMedia: {
-    objectFit: "cover",
-    width: 250,
-    height: 200,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-  },
-
-  timestamp: {
-    fontSize: 11,
-    position: "absolute",
-    bottom: 0,
-    right: 5,
-    color: "#999",
-  },
-
-  dailyTimestamp: {
-    alignItems: "center",
-    textAlign: "center",
-    alignSelf: "center",
-    width: "110px",
-    backgroundColor: "#e1f3fb",
-    margin: "10px",
-    borderRadius: "10px",
-    boxShadow: "0 1px 1px #b3b3b3",
-  },
-
-  dailyTimestampText: {
-    color: "#808888",
-    padding: 8,
-    alignSelf: "center",
-    marginLeft: "0px",
-  },
-
-  ackIcons: {
-    fontSize: 18,
-    verticalAlign: "middle",
-    marginLeft: 4,
-  },
-
-  deletedIcon: {
-    fontSize: 18,
-    verticalAlign: "middle",
-    marginRight: 4,
-  },
-
-  ackDoneAllIcon: {
-    color: green[500],
-    fontSize: 18,
-    verticalAlign: "middle",
-    marginLeft: 4,
-  },
-
-  downloadMedia: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "inherit",
-    padding: 10,
+const MessagesListStyled = styled("div")(({ theme }) => ({
+  backgroundImage: `url(${whatsBackground})`,
+  display: "flex",
+  flexDirection: "column",
+  flexGrow: 1,
+  padding: "20px 20px 20px 20px",
+  overflowY: "scroll",
+  [theme.breakpoints.down("sm")]: {
+    paddingBottom: "90px",
   },
 }));
+
+const CircleLoadingStyled = styled(CircularProgress)({
+  color: green[500],
+  position: "absolute",
+  opacity: "70%",
+  top: 0,
+  left: "50%",
+  marginTop: 12,
+});
+
+const MessageLeftStyled = styled("div")({
+  marginRight: 20,
+  marginTop: 2,
+  minWidth: 100,
+  maxWidth: 600,
+  height: "auto",
+  display: "block",
+  position: "relative",
+  "&:hover #messageActionsButton": {
+    display: "flex",
+    position: "absolute",
+    top: 0,
+    right: 0,
+  },
+
+  whiteSpace: "pre-wrap",
+  backgroundColor: "#ffffff",
+  color: "#303030",
+  alignSelf: "flex-start",
+  borderTopLeftRadius: 0,
+  borderTopRightRadius: 8,
+  borderBottomLeftRadius: 8,
+  borderBottomRightRadius: 8,
+  paddingLeft: 5,
+  paddingRight: 5,
+  paddingTop: 5,
+  paddingBottom: 0,
+  boxShadow: "0 1px 1px #b3b3b3",
+});
+
+const QuotedContainerLeftStyled = styled("div")({
+  margin: "-3px -80px 6px -6px",
+  overflow: "hidden",
+  backgroundColor: "#f0f0f0",
+  borderRadius: "7.5px",
+  display: "flex",
+  position: "relative",
+});
+
+const QuotedMsgStyled = styled("div")({
+  padding: 10,
+  maxWidth: 300,
+  height: "auto",
+  display: "block",
+  whiteSpace: "pre-wrap",
+  overflow: "hidden",
+});
+
+const QuotedSideColorLeft = styled("span")({
+  flex: "none",
+  width: "4px",
+  backgroundColor: "#6bcbef",
+});
+
+const MessageRightStyled = styled("div")({
+  marginLeft: 20,
+  marginTop: 2,
+  minWidth: 100,
+  maxWidth: 600,
+  height: "auto",
+  display: "block",
+  position: "relative",
+  "&:hover #messageActionsButton": {
+    display: "flex",
+    position: "absolute",
+    top: 0,
+    right: 0,
+  },
+
+  whiteSpace: "pre-wrap",
+  backgroundColor: "#dcf8c6",
+  color: "#303030",
+  alignSelf: "flex-end",
+  borderTopLeftRadius: 8,
+  borderTopRightRadius: 8,
+  borderBottomLeftRadius: 8,
+  borderBottomRightRadius: 0,
+  paddingLeft: 5,
+  paddingRight: 5,
+  paddingTop: 5,
+  paddingBottom: 0,
+  boxShadow: "0 1px 1px #b3b3b3",
+});
+
+const QuotedContainerRightStyled = styled("div")({
+  margin: "-3px -80px 6px -6px",
+  overflowY: "hidden",
+  backgroundColor: "#cfe9ba",
+  borderRadius: "7.5px",
+  display: "flex",
+  position: "relative",
+});
+
+const QuotedMsgRightStyled = styled("div")({
+  padding: 10,
+  maxWidth: 300,
+  height: "auto",
+  whiteSpace: "pre-wrap",
+});
+
+const QuotedSideColorRight = styled("span")({
+  flex: "none",
+  width: "4px",
+  backgroundColor: "#35cd96",
+});
+
+const MessageActionsButtonStyled = styled(IconButton)({
+  display: "none",
+  position: "relative",
+  color: "#999",
+  zIndex: 1,
+  backgroundColor: "inherit",
+  opacity: "90%",
+  "&:hover, &.Mui-focusVisible": { backgroundColor: "inherit" },
+});
+
+const MessageContactNameStyled = styled("span")({
+  display: "flex",
+  color: "#6bcbef",
+  fontWeight: 500,
+});
+
+const TextContentItemStyled = styled("div")({
+  overflowWrap: "break-word",
+  padding: "3px 80px 6px 6px",
+});
+
+const TextContentItemDeletedStyled = styled("div")({
+  fontStyle: "italic",
+  color: "rgba(0, 0, 0, 0.36)",
+  overflowWrap: "break-word",
+  padding: "3px 80px 6px 6px",
+});
+
+const MessageMediaStyled = styled("video")({
+  objectFit: "cover",
+  width: 250,
+  height: 200,
+  borderTopLeftRadius: 8,
+  borderTopRightRadius: 8,
+  borderBottomLeftRadius: 8,
+  borderBottomRightRadius: 8,
+});
+
+const TimestampStyled = styled("span")({
+  fontSize: 11,
+  position: "absolute",
+  bottom: 0,
+  right: 5,
+  color: "#999",
+});
+
+const DailyTimestampStyled = styled("span")({
+  alignItems: "center",
+  textAlign: "center",
+  alignSelf: "center",
+  width: "110px",
+  backgroundColor: "#e1f3fb",
+  margin: "10px",
+  borderRadius: "10px",
+  boxShadow: "0 1px 1px #b3b3b3",
+});
+
+const DailyTimestampTextStyled = styled("div")({
+  color: "#808888",
+  padding: 8,
+  alignSelf: "center",
+  marginLeft: "0px",
+});
+
+const AckIconsStyled = {
+  fontSize: 18,
+  verticalAlign: "middle",
+  marginLeft: 4,
+};
+
+const DeletedIconStyled = styled(Block)({
+  fontSize: 18,
+  verticalAlign: "middle",
+  marginRight: 4,
+});
+
+const AckDoneAllIconStyled = styled(DoneAll)({
+  color: green[500],
+  fontSize: 18,
+  verticalAlign: "middle",
+  marginLeft: 4,
+});
+
+const DownloadMediaStyled = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "inherit",
+  padding: 10,
+});
 
 type Message = {
   id: string;
@@ -334,8 +324,6 @@ type MessagesListProps = {
 };
 
 const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
-  //@ts-ignore
-  const classes = useStyles();
   //@ts-ignore
   const [messagesList, dispatch] = useReducer(reducer, []);
   const [pageNumber, setPageNumber] = useState(1);
@@ -523,17 +511,11 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
     } else if (message.mediaType === "audio") {
       return message.mediaUrl ? <Audio url={message.mediaUrl} /> : null;
     } else if (message.mediaType === "video") {
-      return (
-        <video
-          className={classes.messageMedia}
-          src={message.mediaUrl}
-          controls
-        />
-      );
+      return <MessageMediaStyled src={message.mediaUrl} controls />;
     } else {
       return (
         <>
-          <div className={classes.downloadMedia}>
+          <DownloadMediaStyled>
             {/* @ts-ignore */}
             <Button
               startIcon={<GetApp />}
@@ -544,7 +526,7 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
             >
               Download
             </Button>
-          </div>
+          </DownloadMediaStyled>
           <Divider />
         </>
       );
@@ -553,30 +535,27 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
 
   const renderMessageAck = (message: Message) => {
     if (message.ack === 0) {
-      return <AccessTime fontSize="small" className={classes.ackIcons} />;
+      return <AccessTime fontSize="small" sx={AckIconsStyled} />;
     }
     if (message.ack === 1) {
-      return <Done fontSize="small" className={classes.ackIcons} />;
+      return <Done fontSize="small" sx={AckIconsStyled} />;
     }
     if (message.ack === 2) {
-      return <DoneAll fontSize="small" className={classes.ackIcons} />;
+      return <DoneAll fontSize="small" sx={AckIconsStyled} />;
     }
     if (message.ack === 3 || message.ack === 4) {
-      return <DoneAll fontSize="small" className={classes.ackDoneAllIcon} />;
+      return <AckDoneAllIconStyled fontSize="small" />;
     }
   };
 
   const renderDailyTimestamps = (message: Message, index: number) => {
     if (index === 0) {
       return (
-        <span
-          className={classes.dailyTimestamp}
-          key={`timestamp-${message.id}`}
-        >
-          <div className={classes.dailyTimestampText}>
+        <DailyTimestampStyled key={`timestamp-${message.id}`}>
+          <DailyTimestampTextStyled>
             {format(parseISO(messagesList[index].createdAt), "dd/MM/yyyy")}
-          </div>
-        </span>
+          </DailyTimestampTextStyled>
+        </DailyTimestampStyled>
       );
     }
     if (index < messagesList.length - 1) {
@@ -585,14 +564,11 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
 
       if (!isSameDay(messageDay, previousMessageDay)) {
         return (
-          <span
-            className={classes.dailyTimestamp}
-            key={`timestamp-${message.id}`}
-          >
-            <div className={classes.dailyTimestampText}>
+          <DailyTimestampStyled key={`timestamp-${message.id}`}>
+            <DailyTimestampTextStyled>
               {format(parseISO(messagesList[index].createdAt), "dd/MM/yyyy")}
-            </div>
-          </span>
+            </DailyTimestampTextStyled>
+          </DailyTimestampStyled>
         );
       }
     }
@@ -622,25 +598,33 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
 
   const renderQuotedMessage = (message: Message) => {
     return (
-      <div
-        className={clsx(classes.quotedContainerLeft, {
-          [classes.quotedContainerRight]: message.fromMe,
-        })}
-      >
-        <span
-          className={clsx(classes.quotedSideColorLeft, {
-            [classes.quotedSideColorRight]: message.quotedMsg?.fromMe,
-          })}
-        ></span>
-        <div className={classes.quotedMsg}>
-          {!message.quotedMsg?.fromMe && (
-            <span className={classes.messageContactName}>
-              {message.quotedMsg?.contact?.name}
-            </span>
-          )}
-          {message.quotedMsg?.body}
-        </div>
-      </div>
+      <>
+        {message.fromMe} ? (
+        <QuotedContainerRightStyled>
+          <QuotedSideColorRight />
+          <QuotedMsgRightStyled>
+            {!message.quotedMsg?.fromMe && (
+              <MessageContactNameStyled>
+                {message.quotedMsg?.contact?.name}
+              </MessageContactNameStyled>
+            )}
+            {message.quotedMsg?.body}
+          </QuotedMsgRightStyled>
+        </QuotedContainerRightStyled>
+        ): (
+        <QuotedContainerLeftStyled>
+          <QuotedSideColorLeft />
+          <QuotedMsgStyled>
+            {!message.quotedMsg?.fromMe && (
+              <MessageContactNameStyled>
+                {message.quotedMsg?.contact?.name}
+              </MessageContactNameStyled>
+            )}
+            {message.quotedMsg?.body}
+          </QuotedMsgStyled>
+        </QuotedContainerLeftStyled>
+        )
+      </>
     );
   };
 
@@ -653,36 +637,35 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
               <React.Fragment key={message.id}>
                 {renderDailyTimestamps(message, index)}
                 {renderMessageDivider(message, index)}
-                <div className={classes.messageLeft}>
+                <MessageLeftStyled>
                   {/* @ts-ignore */}
-                  <IconButton
+                  <MessageActionsButtonStyled
                     variant="contained"
                     size="small"
                     id="messageActionsButton"
                     disabled={message.isDeleted}
-                    className={classes.messageActionsButton}
                     onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
                   >
                     <ExpandMore />
-                  </IconButton>
+                  </MessageActionsButtonStyled>
                   {isGroup && (
-                    <span className={classes.messageContactName}>
+                    <MessageContactNameStyled>
                       {message.contact?.name}
-                    </span>
+                    </MessageContactNameStyled>
                   )}
                   {(message.mediaUrl ||
                     message.mediaType === "location" ||
                     message.mediaType === "vcard") &&
                     //|| message.mediaType === "multi_vcard"
                     checkMessageMedia(message)}
-                  <div className={classes.textContentItem}>
+                  <TextContentItemStyled>
                     {message.quotedMsg && renderQuotedMessage(message)}
                     <MarkdownWrapper>{message.body}</MarkdownWrapper>
-                    <span className={classes.timestamp}>
+                    <TimestampStyled>
                       {format(parseISO(message.createdAt), "HH:mm")}
-                    </span>
-                  </div>
-                </div>
+                    </TimestampStyled>
+                  </TextContentItemStyled>
+                </MessageLeftStyled>
               </React.Fragment>
             );
           } else {
@@ -690,43 +673,43 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
               <React.Fragment key={message.id}>
                 {renderDailyTimestamps(message, index)}
                 {renderMessageDivider(message, index)}
-                <div className={classes.messageRight}>
+                <MessageRightStyled>
                   {/* @ts-ignore */}
-                  <IconButton
+                  <MessageActionsButtonStyled
                     variant="contained"
                     size="small"
                     id="messageActionsButton"
                     disabled={message.isDeleted}
-                    className={classes.messageActionsButton}
                     onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
                   >
                     <ExpandMore />
-                  </IconButton>
+                  </MessageActionsButtonStyled>
                   {(message.mediaUrl ||
                     message.mediaType === "location" ||
                     message.mediaType === "vcard") &&
                     //|| message.mediaType === "multi_vcard"
                     checkMessageMedia(message)}
-                  <div
-                    className={clsx(classes.textContentItem, {
-                      [classes.textContentItemDeleted]: message.isDeleted,
-                    })}
-                  >
-                    {message.isDeleted && (
-                      <Block
-                        color="disabled"
-                        fontSize="small"
-                        className={classes.deletedIcon}
-                      />
-                    )}
+                  {message.isDeleted} ? (
+                  <TextContentItemDeletedStyled>
+                    <DeletedIconStyled color="disabled" fontSize="small" />
                     {message.quotedMsg && renderQuotedMessage(message)}
                     <MarkdownWrapper>{message.body}</MarkdownWrapper>
-                    <span className={classes.timestamp}>
+                    <TimestampStyled>
                       {format(parseISO(message.createdAt), "HH:mm")}
                       {renderMessageAck(message)}
-                    </span>
-                  </div>
-                </div>
+                    </TimestampStyled>
+                  </TextContentItemDeletedStyled>
+                  ) : (
+                  <TextContentItemDeletedStyled>
+                    {message.quotedMsg && renderQuotedMessage(message)}
+                    <MarkdownWrapper>{message.body}</MarkdownWrapper>
+                    <TimestampStyled>
+                      {format(parseISO(message.createdAt), "HH:mm")}
+                      {renderMessageAck(message)}
+                    </TimestampStyled>
+                  </TextContentItemDeletedStyled>
+                  )
+                </MessageRightStyled>
               </React.Fragment>
             );
           }
@@ -739,26 +722,22 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
   };
 
   return (
-    <div className={classes.messagesListWrapper}>
+    <MessagesListWrapperStyled>
       <MessageOptionsMenu
         message={selectedMessage}
         anchorEl={anchorEl}
         menuOpen={messageOptionsMenuOpen}
         handleClose={handleCloseMessageOptionsMenu}
       />
-      <div
-        id="messagesList"
-        className={classes.messagesList}
-        onScroll={handleScroll}
-      >
+      <MessagesListStyled id="messagesList" onScroll={handleScroll}>
         {messagesList.length > 0 ? renderMessages() : []}
-      </div>
+      </MessagesListStyled>
       {loading && (
         <div>
-          <CircularProgress className={classes.circleLoading} />
+          <CircleLoadingStyled />
         </div>
       )}
-    </div>
+    </MessagesListWrapperStyled>
   );
 };
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -10,15 +10,14 @@ import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
 import type { Error } from "../../types/Error";
 
-const useStyles = makeStyles((_theme) => ({
-  chips: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-  chip: {
-    margin: 2,
-  },
-}));
+const ChipsStyled = styled("div")({
+  display: "flex",
+  flexWrap: "wrap",
+});
+
+const ChipStyled = styled(Chip)({
+  margin: 2,
+});
 
 interface QueueSelectProps {
   selectedQueueIds: number[];
@@ -29,7 +28,6 @@ const QueueSelect: React.FC<QueueSelectProps> = ({
   selectedQueueIds,
   onChange,
 }) => {
-  const classes = useStyles();
   interface Queue {
     id: number;
     name: string;
@@ -73,21 +71,20 @@ const QueueSelect: React.FC<QueueSelectProps> = ({
             },
           }}
           renderValue={(selected: any) => (
-            <div className={classes.chips}>
+            <ChipsStyled>
               {selected?.length > 0 &&
                 selected.map((id: number) => {
                   const queue = queues.find((q) => q.id === id);
                   return queue ? (
-                    <Chip
+                    <ChipStyled
                       key={id}
                       style={{ backgroundColor: queue.color }}
                       variant="outlined"
                       label={queue.name}
-                      className={classes.chip}
                     />
                   ) : null;
                 })}
-            </div>
+            </ChipsStyled>
           )}
         >
           {queues.map((queue) => (

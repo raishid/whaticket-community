@@ -9,24 +9,24 @@ import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import { makeStyles } from "@mui/styles";
+
 import Badge from "@mui/material/Badge";
 import ChatIcon from "@mui/icons-material/Chat";
+import { styled } from "@mui/material/styles";
 
 import TicketListItem from "../TicketListItem";
 import { i18n } from "../../translate/i18n";
 import useTickets from "../../hooks/useTickets";
 import alertSound from "../../assets/sound.mp3";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import type { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  tabContainer: {
-    overflowY: "auto",
-    maxHeight: 350,
-    // ...theme.scrollbarStyles,
-  },
-  popoverPaper: {
+const TabContainerStyled = styled(List)({
+  overflowY: "auto",
+  maxHeight: 350,
+});
+
+const PopoverPaperStyled = styled(Popover)(({ theme }) => ({
+  "&.MuiPopover-paper": {
     width: "100%",
     maxWidth: 350,
     marginLeft: theme.spacing(2),
@@ -35,18 +35,13 @@ const useStyles = makeStyles((theme: Theme) => ({
       maxWidth: 270,
     },
   },
-  noShadow: {
-    boxShadow: "none !important",
-  },
-  iconButton: {
-    color: theme.palette.text.primary,
-  },
+}));
+
+const IconButtonStyle = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.text.primary,
 }));
 
 const NotificationsPopOver: React.FC = () => {
-  //@ts-ignore
-  const classes = useStyles();
-
   const location = useLocation();
   const authContext = useContext(AuthContext);
   const user = authContext?.user;
@@ -226,17 +221,16 @@ const NotificationsPopOver: React.FC = () => {
 
   return (
     <>
-      <IconButton
+      <IconButtonStyle
         onClick={handleClick}
         ref={anchorEl}
         aria-label="Open Notifications"
-        className={classes.iconButton}
       >
         <Badge badgeContent={notifications.length} color="secondary">
           <ChatIcon />
         </Badge>
-      </IconButton>
-      <Popover
+      </IconButtonStyle>
+      <PopoverPaperStyled
         disableScrollLock
         open={isOpen}
         anchorEl={anchorEl.current}
@@ -248,10 +242,9 @@ const NotificationsPopOver: React.FC = () => {
           vertical: "top",
           horizontal: "right",
         }}
-        classes={{ paper: classes.popoverPaper }}
         onClose={handleClickAway}
       >
-        <List dense className={classes.tabContainer}>
+        <TabContainerStyled dense>
           {notifications.length === 0 ? (
             <ListItem>
               <ListItemText>{i18n.t("notifications.noTickets")}</ListItemText>
@@ -263,8 +256,8 @@ const NotificationsPopOver: React.FC = () => {
               </NotificationTicket>
             ))
           )}
-        </List>
-      </Popover>
+        </TabContainerStyled>
+      </PopoverPaperStyled>
     </>
   );
 };

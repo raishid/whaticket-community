@@ -1,28 +1,25 @@
 import { useState, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
 
 import ModalImage from "react-modal-image";
 import api from "../../services/api";
-import type { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((_theme: Theme) => ({
-  messageMedia: {
-    objectFit: "cover",
-    width: 250,
-    height: 200,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-  },
-}));
+import { styled } from "@mui/material/styles";
+
+const ModalImageStyled = styled(ModalImage)({
+  objectFit: "cover",
+  width: 250,
+  height: 200,
+  borderTopLeftRadius: 8,
+  borderTopRightRadius: 8,
+  borderBottomLeftRadius: 8,
+  borderBottomRightRadius: 8,
+});
 
 interface ModalImageCorsProps {
   imageUrl: string;
 }
 
 const ModalImageCors = ({ imageUrl }: ModalImageCorsProps) => {
-  const classes = useStyles();
   const [fetching, setFetching] = useState(true);
   const [blobUrl, setBlobUrl] = useState("");
 
@@ -42,8 +39,7 @@ const ModalImageCors = ({ imageUrl }: ModalImageCorsProps) => {
   }, [imageUrl]);
 
   return (
-    <ModalImage
-      className={classes.messageMedia}
+    <ModalImageStyled
       small={fetching ? imageUrl : blobUrl}
       medium={fetching ? imageUrl : blobUrl}
       large={fetching ? imageUrl : blobUrl}

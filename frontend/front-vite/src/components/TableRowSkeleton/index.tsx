@@ -1,15 +1,13 @@
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import Skeleton from "@mui/material/Skeleton";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 
-const useStyles = makeStyles((_theme) => ({
-  customTableCell: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-}));
+const CustomTableCellStyled = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+});
 
 interface TableRowSkeletonProps {
   avatar?: boolean;
@@ -20,7 +18,6 @@ const TableRowSkeleton: React.FC<TableRowSkeletonProps> = ({
   avatar,
   columns,
 }) => {
-  const classes = useStyles();
   return (
     <>
       <TableRow>
@@ -39,11 +36,11 @@ const TableRowSkeleton: React.FC<TableRowSkeletonProps> = ({
             </TableCell>
           </>
         )}
-        {Array.from({ length: columns }, (_, index) => (
+        {Array.from({ length: columns || 0 }, (_, index) => (
           <TableCell align="center" key={index}>
-            <div className={classes.customTableCell}>
+            <CustomTableCellStyled>
               <Skeleton animation="wave" height={30} width={80} />
-            </div>
+            </CustomTableCellStyled>
           </TableCell>
         ))}
       </TableRow>
