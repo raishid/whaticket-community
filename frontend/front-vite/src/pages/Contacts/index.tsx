@@ -290,10 +290,7 @@ const Contacts = () => {
           </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <MainPaperStyled
-        variant="outlined"
-        onScroll={handleScroll}
-      >
+      <MainPaperStyled variant="outlined" onScroll={handleScroll}>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -355,7 +352,7 @@ const Contacts = () => {
             </>
           </TableBody>
         </Table>
-      </Paper>
+      </MainPaperStyled>
     </MainContainer>
   );
 };

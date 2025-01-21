@@ -10,7 +10,10 @@
     "dev:server": "ts-node-dev --respawn --transpile-only --ignore node_modules src/server.ts",
     "pretest": "NODE_ENV=test sequelize db:migrate && NODE_ENV=test sequelize db:seed:all",
     "test": "NODE_ENV=test jest",
-    "posttest": "NODE_ENV=test sequelize db:migrate:undo:all"
+    "posttest": "NODE_ENV=test sequelize db:migrate:undo:all",
+    "migrate:db": "sequelize-cli db:migrate",
+    "seed:db": "sequelize-cli db:seed:all",
+    "clean": "bun x del-cli dist node_modules/ bun.lockb models"
   },
   "author": "",
   "license": "MIT",

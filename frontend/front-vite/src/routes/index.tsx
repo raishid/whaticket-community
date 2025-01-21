@@ -29,97 +29,97 @@ const AppRoutes = () => {
             <Route
               path="/"
               element={
-                <LoggedInLayout>
-                  <Dashboard />
-                </LoggedInLayout>
-                // <PrivateRoute>
-                //   <WhatsAppsProvider>
-                //   </WhatsAppsProvider>
-                // </PrivateRoute>
+                <PrivateRoute>
+                  <WhatsAppsProvider>
+                    <LoggedInLayout>
+                      <Dashboard />
+                    </LoggedInLayout>
+                  </WhatsAppsProvider>
+                </PrivateRoute>
               }
             />
             <Route
               path="/tickets/:ticketId?"
               element={
-                <LoggedInLayout>
-                  <Tickets />
-                </LoggedInLayout>
-                // <PrivateRoute>
-                //   <WhatsAppsProvider>
-                //   </WhatsAppsProvider>
-                // </PrivateRoute>
+                <PrivateRoute>
+                  <LoggedInLayout>
+                    <WhatsAppsProvider>
+                      <Tickets />
+                    </WhatsAppsProvider>
+                  </LoggedInLayout>
+                </PrivateRoute>
               }
             />
             <Route
               path="/connections"
               element={
-                <LoggedInLayout>
-                  <Connections />
-                </LoggedInLayout>
-                //   <WhatsAppsProvider>
-                // <PrivateRoute>
-                //   </WhatsAppsProvider>
-                // </PrivateRoute>
+                <PrivateRoute>
+                  <LoggedInLayout>
+                    <WhatsAppsProvider>
+                      <Connections />
+                    </WhatsAppsProvider>
+                  </LoggedInLayout>
+                </PrivateRoute>
               }
             />
             <Route
               path="/contacts"
               element={
-                <LoggedInLayout>
-                  <Contacts />
-                </LoggedInLayout>
-                // <PrivateRoute>
-                //   <WhatsAppsProvider>
-                //   </WhatsAppsProvider>
-                // </PrivateRoute>
+                <PrivateRoute>
+                  <LoggedInLayout>
+                    <WhatsAppsProvider>
+                      <Contacts />
+                    </WhatsAppsProvider>
+                  </LoggedInLayout>
+                </PrivateRoute>
               }
             />
             <Route
               path="/users"
               element={
-                <LoggedInLayout>
-                  <Users />
-                </LoggedInLayout>
-                // <PrivateRoute>
-                //   <WhatsAppsProvider>
-                //   </WhatsAppsProvider>
-                // </PrivateRoute>
+                <PrivateRoute>
+                  <LoggedInLayout>
+                    <WhatsAppsProvider>
+                      <Users />
+                    </WhatsAppsProvider>
+                  </LoggedInLayout>
+                </PrivateRoute>
               }
             />
             <Route
               path="/quickAnswers"
               element={
-                <LoggedInLayout>
-                  <QuickAnswers />
-                </LoggedInLayout>
-                //<PrivateRoute>
-                //   <WhatsAppsProvider>
-                //   </WhatsAppsProvider>
-                // </PrivateRoute>
+                <PrivateRoute>
+                  <LoggedInLayout>
+                    <WhatsAppsProvider>
+                      <QuickAnswers />
+                    </WhatsAppsProvider>
+                  </LoggedInLayout>
+                </PrivateRoute>
               }
             />
             <Route
               path="/Settings"
               element={
-                <LoggedInLayout>
-                  <Settings />
-                </LoggedInLayout>
-                // <PrivateRoute>
-                //   <WhatsAppsProvider>
-                //   </WhatsAppsProvider>
-                // </PrivateRoute>
+                <PrivateRoute>
+                  <LoggedInLayout>
+                    <WhatsAppsProvider>
+                      <Settings />
+                    </WhatsAppsProvider>
+                  </LoggedInLayout>
+                </PrivateRoute>
               }
             />
             <Route
               path="/Queues"
               element={
-                <LoggedInLayout>
-                  <Queues />
-                </LoggedInLayout>
-                // <PrivateRoute>
-                //   <WhatsAppsProvider>
-                //   </WhatsAppsProvider>
-                // </PrivateRoute>
+                <PrivateRoute>
+                  <LoggedInLayout>
+                    <WhatsAppsProvider>
+                      <Queues />
+                    </WhatsAppsProvider>
+                  </LoggedInLayout>
+                </PrivateRoute>
               }
             />
           </Routes>

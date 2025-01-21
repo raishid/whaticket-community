@@ -36,16 +36,14 @@ type CanProps = {
   role: keyof IRules;
   perform: string;
   data?: any;
-  yes: () => JSX.Element;
-  no: () => JSX.Element;
+  yes?: () => JSX.Element;
+  no?: () => JSX.Element;
 };
 
-const Can = ({ role, perform, data, yes, no }: CanProps) =>
-  check(role, perform, data) ? yes() : no();
-
-Can.defaultProps = {
-  yes: () => null,
-  no: () => null,
+const Can = ({ role, perform, data, yes, no }: CanProps) => {
+  const yesFn = yes || (() => null);
+  const noFn = no || (() => null);
+  return check(role, perform, data) ? yesFn() : noFn();
 };
 
 export { Can };

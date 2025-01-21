@@ -1,0 +1,40 @@
+services:
+
+  backend:
+    build: .
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=${DB_USER:-root}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME:-whaticket}
+      - JWT_SECRET=${JWT_SECRET:-3123123213123}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-75756756756}
+      - BACKEND_URL=${BACKEND_URL:-http://localhost}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - PROXY_PORT=${PROXY_PORT:-8080}
+      - CHROME_ARGS=--no-sandbox --disable-setuid-sandbox
+    ports:
+      - ${BACKEND_PORT:-8080}:3000
+    volumes:
+      - ./public/:/usr/src/app/public/
+      - ./.wwebjs_auth/:/usr/src/app/.wwebjs_auth/
+
+  mysql:
+    image: ${MYSQL_ENGINE:-mariadb}:${MYSQL_VERSION:-10.6}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_bin    
+    volumes:
+      - ./.docker/data/:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${DB_NAME:-whaticket}
+      - MYSQL_ROOT_PASSWORD=${DB_PASS}
+      - TZ=${TZ:-America/Fortaleza}
+    ports:
+      - ${DB_PORT:-3306}:3306
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      - PMA_HOSTS=mysql
+    ports:
+      - ${PMA_PORT:-9000}:80

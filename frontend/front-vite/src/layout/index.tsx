@@ -25,6 +25,7 @@ import BackdropLoading from "../components/BackdropLoading";
 import { i18n } from "../translate/i18n";
 import { useThemeContext } from "../context/DarkMode";
 import type { ReactNode } from "react";
+import zIndex from "@mui/material/styles/zIndex";
 
 const drawerWidth = 240;
 
@@ -60,6 +61,7 @@ const AppBarStyled = styled(AppBar)(({ theme }) => ({
 const ContentStyled = styled("main")({
   flex: 1,
   overflow: "auto",
+  zIndex: 2,
 });
 
 const SwitchStyled = styled(Switch)({
@@ -103,7 +105,7 @@ const DrawerPaperStyled = styled(Drawer)(({ theme }) => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   backgroundColor: theme.palette.background.paper,
-  "& .MuiDrawer-paper": {
+  "&.MuiDrawer-paper": {
     position: "relative",
     whiteSpace: "nowrap",
     width: drawerWidth,
@@ -112,7 +114,9 @@ const DrawerPaperStyled = styled(Drawer)(({ theme }) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
     backgroundColor: theme.palette.background.paper,
+    zIndex: 1,
   },
+  zIndex: 1,
 }));
 
 const DrawerPaperStyledClose = styled(Drawer)(({ theme }) => ({
@@ -125,7 +129,7 @@ const DrawerPaperStyledClose = styled(Drawer)(({ theme }) => ({
   [theme.breakpoints.up("sm")]: {
     width: theme.spacing(9),
   },
-  "& .MuiDrawer-paper": {
+  "&.MuiDrawer-paper": {
     overflowX: "hidden",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
@@ -135,16 +139,20 @@ const DrawerPaperStyledClose = styled(Drawer)(({ theme }) => ({
     [theme.breakpoints.up("sm")]: {
       width: theme.spacing(9),
     },
+    zIndex: 1,
   },
+  zIndex: 1,
 }));
 
 const AppBarShiftStyled = styled(AppBar)(({ theme }) => ({
-  marginLeft: drawerWidth,
-  width: `calc(100% - ${drawerWidth}px)`,
+  zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
+    duration: theme.transitions.duration.leavingScreen,
   }),
+  backgroundColor: theme.palette.background.default,
+  marginLeft: drawerWidth,
+  width: `calc(100% - ${drawerWidth}px)`,
 }));
 
 const MenuButtonStyled = styled(IconButton)(({ theme }) => ({
@@ -216,176 +224,175 @@ const LoggedInLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <RootStyles>
-      {drawerOpen} ? (
-      <DrawerPaperStyled>
-        <ToolbarIconStyled>
-          <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </ToolbarIconStyled>
-        <Divider />
-        <List>
-          <MainListItems drawerClose={drawerClose} />
-        </List>
-        <Divider />
-      </DrawerPaperStyled>
+      {drawerOpen ? (
+        <DrawerPaperStyled open={drawerOpen} variant={drawerVariant}>
+          <ToolbarIconStyled>
+            <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </ToolbarIconStyled>
+          <Divider />
+          <List>
+            <MainListItems drawerClose={drawerClose} />
+          </List>
+          <Divider />
+        </DrawerPaperStyled>
       ) : (
-      <DrawerPaperStyledClose>
-        <ToolbarIconStyled>
-          <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </ToolbarIconStyled>
-        <Divider />
-        <List>
-          <MainListItems drawerClose={drawerClose} />
-        </List>
-        <Divider />
-      </DrawerPaperStyledClose>
-      )
+        <DrawerPaperStyledClose open={drawerOpen} variant={drawerVariant}>
+          <ToolbarIconStyled>
+            <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </ToolbarIconStyled>
+          <Divider />
+          <List>
+            <MainListItems drawerClose={drawerClose} />
+          </List>
+          <Divider />
+        </DrawerPaperStyledClose>
+      )}
+
       <UserModal
         open={userModalOpen}
         onClose={() => setUserModalOpen(false)}
         userId={user?.id}
       />
-      {drawerOpen} ? (
-      <AppBarShiftStyled>
-        <ToolbarStyled variant="dense">
-          {drawerOpen} ? (
-          <MenuButtonHiddenStyled
-            edge="start"
-            aria-label="open drawer"
-            onClick={() => setDrawerOpen(!drawerOpen)}
-          >
-            <MenuIcon />
-          </MenuButtonHiddenStyled>
-          ): (
-          <MenuButtonStyled
-            edge="start"
-            aria-label="open drawer"
-            onClick={() => setDrawerOpen(!drawerOpen)}
-          >
-            <MenuIcon />
-          </MenuButtonStyled>
-          )
-          <TitleStyled component="h1" variant="h6" noWrap>
-            WhaTicket
-          </TitleStyled>
-          <ThemeSwitchContainerStyled>
-            <ThemeIconStyled />
-            <SwitchStyled
-              checked={darkMode}
-              onChange={toggleTheme}
-              color="default"
-            />
-          </ThemeSwitchContainerStyled>
-          {/* @ts-ignore */}
-          {user.id && <NotificationsPopOverStyled />}
-          <div>
-            <IconButtonStyled
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-            >
-              <AccountCircle />
-            </IconButtonStyled>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              // getContentAnchorEl={null}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={menuOpen}
-              onClose={handleCloseMenu}
-            >
-              <MenuItem onClick={handleOpenUserModal}>
-                {i18n.t("mainDrawer.appBar.user.profile")}
-              </MenuItem>
-              <MenuItem onClick={handleClickLogout}>
-                {i18n.t("mainDrawer.appBar.user.logout")}
-              </MenuItem>
-            </Menu>
-          </div>
-        </ToolbarStyled>
-      </AppBarShiftStyled>
+
+      {drawerOpen ? (
+        <AppBarShiftStyled>
+          <ToolbarStyled variant="dense">
+            {drawerOpen ? (
+              <MenuButtonHiddenStyled
+                edge="start"
+                aria-label="open drawer"
+                onClick={() => setDrawerOpen(!drawerOpen)}
+              >
+                <MenuIcon />
+              </MenuButtonHiddenStyled>
+            ) : (
+              <MenuButtonStyled
+                edge="start"
+                aria-label="open drawer"
+                onClick={() => setDrawerOpen(!drawerOpen)}
+              >
+                <MenuIcon />
+              </MenuButtonStyled>
+            )}
+            <TitleStyled variant="h6" noWrap>
+              WhaTicket
+            </TitleStyled>
+            <ThemeSwitchContainerStyled>
+              <ThemeIconStyled />
+              <SwitchStyled
+                checked={darkMode}
+                onChange={toggleTheme}
+                color="default"
+              />
+            </ThemeSwitchContainerStyled>
+            {user.id && <NotificationsPopOverStyled />}
+            <div>
+              <IconButtonStyled
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+              >
+                <AccountCircle />
+              </IconButtonStyled>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={menuOpen}
+                onClose={handleCloseMenu}
+              >
+                <MenuItem onClick={handleOpenUserModal}>
+                  {i18n.t("mainDrawer.appBar.user.profile")}
+                </MenuItem>
+                <MenuItem onClick={handleClickLogout}>
+                  {i18n.t("mainDrawer.appBar.user.logout")}
+                </MenuItem>
+              </Menu>
+            </div>
+          </ToolbarStyled>
+        </AppBarShiftStyled>
       ) : (
-      <AppBarStyled>
-        <ToolbarStyled variant="dense">
-          {drawerOpen} ? (
-          <MenuButtonHiddenStyled
-            edge="start"
-            aria-label="open drawer"
-            onClick={() => setDrawerOpen(!drawerOpen)}
-          >
-            <MenuIcon />
-          </MenuButtonHiddenStyled>
-          ): (
-          <MenuButtonStyled
-            edge="start"
-            aria-label="open drawer"
-            onClick={() => setDrawerOpen(!drawerOpen)}
-          >
-            <MenuIcon />
-          </MenuButtonStyled>
-          )
-          <TitleStyled component="h1" variant="h6" noWrap>
-            WhaTicket
-          </TitleStyled>
-          <ThemeSwitchContainerStyled>
-            <ThemeIconStyled />
-            <SwitchStyled
-              checked={darkMode}
-              onChange={toggleTheme}
-              color="default"
-            />
-          </ThemeSwitchContainerStyled>
-          {/* @ts-ignore */}
-          {user.id && <NotificationsPopOverStyled />}
-          <div>
-            <IconButtonStyled
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-            >
-              <AccountCircle />
-            </IconButtonStyled>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              // getContentAnchorEl={null}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={menuOpen}
-              onClose={handleCloseMenu}
-            >
-              <MenuItem onClick={handleOpenUserModal}>
-                {i18n.t("mainDrawer.appBar.user.profile")}
-              </MenuItem>
-              <MenuItem onClick={handleClickLogout}>
-                {i18n.t("mainDrawer.appBar.user.logout")}
-              </MenuItem>
-            </Menu>
-          </div>
-        </ToolbarStyled>
-      </AppBarStyled>
-      )
+        <AppBarStyled>
+          <ToolbarStyled variant="dense">
+            {drawerOpen ? (
+              <MenuButtonHiddenStyled
+                edge="start"
+                aria-label="open drawer"
+                onClick={() => setDrawerOpen(!drawerOpen)}
+              >
+                <MenuIcon />
+              </MenuButtonHiddenStyled>
+            ) : (
+              <MenuButtonStyled
+                edge="start"
+                aria-label="open drawer"
+                onClick={() => setDrawerOpen(!drawerOpen)}
+              >
+                <MenuIcon />
+              </MenuButtonStyled>
+            )}
+            <TitleStyled variant="h6" noWrap>
+              WhaTicket
+            </TitleStyled>
+            <ThemeSwitchContainerStyled>
+              <ThemeIconStyled />
+              <SwitchStyled
+                checked={darkMode}
+                onChange={toggleTheme}
+                color="default"
+              />
+            </ThemeSwitchContainerStyled>
+            {user.id && <NotificationsPopOverStyled />}
+            <div>
+              <IconButtonStyled
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+              >
+                <AccountCircle />
+              </IconButtonStyled>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={menuOpen}
+                onClose={handleCloseMenu}
+              >
+                <MenuItem onClick={handleOpenUserModal}>
+                  {i18n.t("mainDrawer.appBar.user.profile")}
+                </MenuItem>
+                <MenuItem onClick={handleClickLogout}>
+                  {i18n.t("mainDrawer.appBar.user.logout")}
+                </MenuItem>
+              </Menu>
+            </div>
+          </ToolbarStyled>
+        </AppBarStyled>
+      )}
+
       <ContentStyled>
         <AppBarSpacerStyled />
-        {children ? children : null}
+        {children || null}
       </ContentStyled>
     </RootStyles>
   );
