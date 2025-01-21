@@ -2,11 +2,10 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { parseISO, format, isSameDay } from "date-fns";
-import clsx from "clsx";
 
 import { makeStyles } from "@mui/styles";
 import { green } from "@mui/material/colors";
-import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Typography from "@mui/material/Typography";
@@ -25,12 +24,23 @@ import toastError from "../../errors/toastError";
 import type { Error } from "../../types/Error";
 import { styled } from "@mui/material/styles";
 
-const TicketStyled = styled("div")({
-  position: "relative",
-});
+interface TicketStyledProps {
+  status: boolean;
+}
 
-const PendingTicketStyled = styled("div")({
-  cursor: "unset",
+const TicketStyled = styled(ListItemButton, {
+  shouldForwardProp: (props) => props !== "status",
+})<TicketStyledProps>(({ status }) => {
+  if (status) {
+    return {
+      position: "relative",
+      cursor: "pointer",
+    };
+  }
+
+  return {
+    position: "relative",
+  };
 });
 
 const NoTicketsDivStyled = styled("div")({
@@ -267,17 +277,14 @@ const TicketListItem = ({ ticket }: { ticket: Ticket }) => {
 
   return (
     <React.Fragment key={ticket.id}>
-      <ListItem
+      <TicketStyled
         dense
-        button
-        onClick={(e) => {
+        onClick={() => {
           if (ticket.status === "pending") return;
           handleSelectTicket(ticket.id);
         }}
         selected={!!ticketId && +ticketId === ticket.id}
-        className={clsx(classes.ticket, {
-          [classes.pendingTicket]: ticket.status === "pending",
-        })}
+        status={ticket.status !== "pending"}
       >
         <Tooltip
           arrow
@@ -297,21 +304,18 @@ const TicketListItem = ({ ticket }: { ticket: Ticket }) => {
             <ContactNameWrapperStyled>
               <Typography
                 noWrap
-                component="span"
+                slot="span"
                 variant="body2"
                 color="textPrimary"
               >
                 {ticket.contact.name}
               </Typography>
               {ticket.status === "closed" && (
-                <ClosedBadgeStyled
-                  badgeContent={"closed"}
-                  color="primary"
-                />
+                <ClosedBadgeStyled badgeContent={"closed"} color="primary" />
               )}
               {ticket.lastMessage && (
                 <LastMessageTimeStyled
-                  component="span"
+                  slot="span"
                   variant="body2"
                   color="textSecondary"
                 >
@@ -323,9 +327,7 @@ const TicketListItem = ({ ticket }: { ticket: Ticket }) => {
                 </LastMessageTimeStyled>
               )}
               {ticket.whatsappId && (
-                <UserTagStyled
-                  title={i18n.t("ticketsList.connectionTitle")}
-                >
+                <UserTagStyled title={i18n.t("ticketsList.connectionTitle")}>
                   {ticket.whatsapp?.name}
                 </UserTagStyled>
               )}
@@ -335,7 +337,7 @@ const TicketListItem = ({ ticket }: { ticket: Ticket }) => {
             <ContactNameWrapperStyled>
               <ContactLastMessageStyled
                 noWrap
-                component="span"
+                slot="span"
                 variant="body2"
                 color="textSecondary"
               >
@@ -361,12 +363,12 @@ const TicketListItem = ({ ticket }: { ticket: Ticket }) => {
             variant="contained"
             size="small"
             loading={loading}
-            onClick={(e) => handleAcepptTicket(ticket.id)}
+            onClick={() => handleAcepptTicket(ticket.id)}
           >
             {i18n.t("ticketsList.buttons.accept")}
           </AcceptButtonStyled>
         )}
-      </ListItem>
+      </TicketStyled>
       <Divider variant="inset" component="li" />
     </React.Fragment>
   );

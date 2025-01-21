@@ -32,9 +32,9 @@ services:
       - ${DB_PORT:-3306}:3306
     restart: always
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    environment:
-      - PMA_HOSTS=mysql
-    ports:
-      - ${PMA_PORT:-9000}:80
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin:latest
+  #   environment:
+  #     - PMA_HOSTS=mysql
+  #   ports:
+  #     - ${PMA_PORT:-9000}:80

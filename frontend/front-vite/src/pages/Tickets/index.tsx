@@ -56,7 +56,13 @@ const Chat = () => {
   return (
     <ChatContainerStyled>
       <ChatPapperStyled>
-        <Grid container spacing={0}>
+        <Grid
+          container
+          spacing={0}
+          sx={{
+            width: "100%",
+          }}
+        >
           {/* <Grid item xs={4} className={classes.contactsWrapper}> */}
           {ticketId ? (
             <ContactsWrapperSmallStyled
