@@ -350,7 +350,7 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
-  const lastMessageRef = useRef<HTMLDivElement>(null);
+  const messageListContainer = useRef<HTMLDivElement>(null);
 
   const [selectedMessage, setSelectedMessage] = useState<Message>({
     id: "",
@@ -410,10 +410,14 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
       if (data.action === "create") {
         //@ts-ignore
         dispatch({ type: "ADD_MESSAGE", payload: data.message });
-        scrollToBottom();
       }
 
       if (data.action === "update") {
+        //@ts-ignore
+        dispatch({ type: "UPDATE_MESSAGE", payload: data.message });
+      }
+
+      if (data.action === "delete") {
         //@ts-ignore
         dispatch({ type: "UPDATE_MESSAGE", payload: data.message });
       }
@@ -424,17 +428,23 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
     };
   }, [ticketId]);
 
+  useEffect(() => {
+    scrollToBottom();
+    document.getElementById("message-input")?.focus();
+  }, [messagesList]);
+
   const loadMore = () => {
     setPageNumber((prevPageNumber) => prevPageNumber + 1);
   };
 
   const scrollToBottom = () => {
-    if (lastMessageRef.current) {
-      lastMessageRef.current.scrollIntoView({});
+    if (messageListContainer.current) {
+      messageListContainer.current.scrollTop =
+        messageListContainer.current.scrollHeight;
     }
   };
 
-  const handleScroll = (e: React.MouseEvent<HTMLElement>) => {
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     if (!hasMore) return;
     const { scrollTop } = e.currentTarget;
 
@@ -597,7 +607,6 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
       return (
         <div
           key={`ref-${message.createdAt}`}
-          ref={lastMessageRef}
           style={{ float: "left", clear: "both" }}
         />
       );
@@ -620,31 +629,31 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
   const renderQuotedMessage = (message: Message) => {
     return (
       <>
-        {message.fromMe} ? (
-        <QuotedContainerRightStyled>
-          <QuotedSideColorRight />
-          <QuotedMsgRightStyled>
-            {!message.quotedMsg?.fromMe && (
-              <MessageContactNameStyled>
-                {message.quotedMsg?.contact?.name}
-              </MessageContactNameStyled>
-            )}
-            {message.quotedMsg?.body}
-          </QuotedMsgRightStyled>
-        </QuotedContainerRightStyled>
-        ): (
-        <QuotedContainerLeftStyled>
-          <QuotedSideColorLeft />
-          <QuotedMsgStyled>
-            {!message.quotedMsg?.fromMe && (
-              <MessageContactNameStyled>
-                {message.quotedMsg?.contact?.name}
-              </MessageContactNameStyled>
-            )}
-            {message.quotedMsg?.body}
-          </QuotedMsgStyled>
-        </QuotedContainerLeftStyled>
-        )
+        {message.fromMe ? (
+          <QuotedContainerRightStyled>
+            <QuotedSideColorRight />
+            <QuotedMsgRightStyled>
+              {!message.quotedMsg?.fromMe && (
+                <MessageContactNameStyled>
+                  {message.quotedMsg?.contact?.name}
+                </MessageContactNameStyled>
+              )}
+              {message.quotedMsg?.body}
+            </QuotedMsgRightStyled>
+          </QuotedContainerRightStyled>
+        ) : (
+          <QuotedContainerLeftStyled>
+            <QuotedSideColorLeft />
+            <QuotedMsgStyled>
+              {!message.quotedMsg?.fromMe && (
+                <MessageContactNameStyled>
+                  {message.quotedMsg?.contact?.name}
+                </MessageContactNameStyled>
+              )}
+              {message.quotedMsg?.body}
+            </QuotedMsgStyled>
+          </QuotedContainerLeftStyled>
+        )}
       </>
     );
   };
@@ -676,7 +685,10 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
                   message.mediaType === "vcard") &&
                   //|| message.mediaType === "multi_vcard"
                   checkMessageMedia(message)}
-                <TextContentItemStyled>
+                <TextContentItemStyled isDeleted={message.isDeleted}>
+                  {message.isDeleted && (
+                    <DeletedIconStyled color="disabled" fontSize="small" />
+                  )}
                   {message.quotedMsg && renderQuotedMessage(message)}
                   <MarkdownWrapper>{message.body}</MarkdownWrapper>
                   <TimestampStyled>
@@ -735,7 +747,11 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
         menuOpen={messageOptionsMenuOpen}
         handleClose={handleCloseMessageOptionsMenu}
       />
-      <MessagesListStyled id="messagesList" onScroll={handleScroll}>
+      <MessagesListStyled
+        id="messagesList"
+        ref={messageListContainer}
+        onScroll={handleScroll}
+      >
         {messagesList.length > 0 ? renderMessages() : []}
       </MessagesListStyled>
       {loading && (

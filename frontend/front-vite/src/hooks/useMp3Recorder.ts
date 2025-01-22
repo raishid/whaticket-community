@@ -7,16 +7,20 @@ export const useMp3Recorder = () => {
   const audioChunksRef = useRef<Blob[]>([]);
 
   const [blob, setBlob] = useState<Blob | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
 
   async function startRecording() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      setStream(mediaStream);
 
       const mimeType = MediaRecorder.isTypeSupported("audio/webm")
         ? "audio/webm"
         : "audio/ogg";
 
-      mediaRecorderRef.current = new MediaRecorder(stream, {
+      mediaRecorderRef.current = new MediaRecorder(mediaStream, {
         mimeType,
       });
       if (mediaRecorderRef.current === null) {
@@ -52,9 +56,22 @@ export const useMp3Recorder = () => {
     }
   }
 
-  function stopRecording(recorder: MediaRecorder): void {
+  function stopRecording(
+    recorder: MediaRecorder,
+    stream: MediaStream | null
+  ): void {
     recorder.stop();
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
   }
 
-  return { startRecording, stopRecording, blob, mediaRecorderRef, setBlob };
+  return {
+    startRecording,
+    stopRecording,
+    blob,
+    mediaRecorderRef,
+    setBlob,
+    stream,
+  };
 };

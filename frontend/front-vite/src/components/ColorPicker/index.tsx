@@ -1,7 +1,6 @@
 import Dialog from "@mui/material/Dialog";
 import { useState } from "react";
 import { GithubPicker } from "react-color";
-import type {} from "react-color";
 
 interface ColorPickerProps {
   onChange: (color: string) => void;

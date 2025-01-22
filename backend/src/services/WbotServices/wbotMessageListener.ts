@@ -9,6 +9,7 @@ import {
   MessageAck,
   Client
 } from "whatsapp-web.js";
+import type { TwbotMessage } from '../../@types/WbotMessageExtends'
 
 import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
@@ -25,6 +26,7 @@ import UpdateTicketService from "../TicketServices/UpdateTicketService";
 import CreateContactService from "../ContactServices/CreateContactService";
 import GetContactService from "../ContactServices/GetContactService";
 import formatBody from "../../helpers/Mustache";
+import UpdateDeleteMessageService from "../MessageServices/UpdateDeleteMessageService";
 
 interface Session extends Client {
   id?: number;
@@ -237,11 +239,26 @@ const isValidMsg = (msg: WbotMessage): boolean => {
     msg.type === "vcard" ||
     //msg.type === "multi_vcard" ||
     msg.type === "sticker" ||
-    msg.type === "location"
+    msg.type === "location" ||
+    msg.type === 'revoked'
   )
     return true;
   return false;
 };
+
+const handleMessageDeleted = async (
+  msg: TwbotMessage,
+  ) => {
+    if (!isValidMsg(msg)) {
+      return;
+    }
+    if(!msg.fromMe){
+      if(msg?._data?.protocolMessageKey?.id){
+        await UpdateDeleteMessageService(msg._data.protocolMessageKey.id)
+      }
+
+    }
+}
 
 const handleMessage = async (
   msg: WbotMessage,
@@ -447,7 +464,7 @@ const handleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
 };
 
 const wbotMessageListener = (wbot: Session): void => {
-  wbot.on("message_create", async msg => {
+  wbot.on("message_create", async msg => { 
     handleMessage(msg, wbot);
   });
 
@@ -457,6 +474,14 @@ const wbotMessageListener = (wbot: Session): void => {
 
   wbot.on("message_ack", async (msg, ack) => {
     handleMsgAck(msg, ack);
+  });
+
+  wbot.on('message_edit', async (msg) => {
+    handleMessage(msg, wbot);
+  });
+
+  wbot.on('message_revoke_everyone', async (msg) => {
+    handleMessageDeleted(msg);
   });
 };
 

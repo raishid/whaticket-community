@@ -196,8 +196,14 @@ const MessageQuickAnswersWrapperStyled = styled("ul")({
 });
 
 const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
-  const { startRecording, stopRecording, mediaRecorderRef, blob, setBlob } =
-    useMp3Recorder();
+  const {
+    startRecording,
+    stopRecording,
+    mediaRecorderRef,
+    blob,
+    setBlob,
+    stream,
+  } = useMp3Recorder();
 
   const { ticketId } = useParams();
 
@@ -373,7 +379,7 @@ const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
     if (mediaRecorderRef.current === null) {
       throw new Error("MediaRecorder is null.");
     }
-    stopRecording(mediaRecorderRef.current);
+    stopRecording(mediaRecorderRef.current, stream);
   };
 
   const handleUploadAudio = async () => {
@@ -410,7 +416,7 @@ const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
       if (mediaRecorderRef.current === null) {
         throw new Error("MediaRecorder is null.");
       }
-      stopRecording(mediaRecorderRef.current);
+      stopRecording(mediaRecorderRef.current, stream);
       setBlob(null);
     } catch (err) {
       toastError(err as Error);
@@ -617,6 +623,7 @@ const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
           </Hidden>
           <MessageInputWrapperStyled>
             <MessageInputStyled
+              id="message-input"
               inputRef={inputRef}
               placeholder={
                 ticketStatus === "open"
