@@ -196,7 +196,8 @@ const MessageQuickAnswersWrapperStyled = styled("ul")({
 });
 
 const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
-  const { blob, startRecording, stopRecording } = useMp3Recorder();
+  const { startRecording, stopRecording, mediaRecorderRef, blob, setBlob } =
+    useMp3Recorder();
 
   const { ticketId } = useParams();
 
@@ -237,6 +238,12 @@ const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
       }
     };
   }, [ticketId, setReplyingMessage]);
+
+  useEffect(() => {
+    if (recording) {
+      handleUploadAudio();
+    }
+  }, [blob]);
 
   const handleChangeInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -362,11 +369,16 @@ const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
     }
   };
 
+  const handleAudioStopBeforeSend = async () => {
+    if (mediaRecorderRef.current === null) {
+      throw new Error("MediaRecorder is null.");
+    }
+    stopRecording(mediaRecorderRef.current);
+  };
+
   const handleUploadAudio = async () => {
     setLoading(true);
     try {
-      //@ts-ignore
-      stopRecording();
       if (blob === null) {
         throw new Error("No audio recorded");
       }
@@ -389,13 +401,17 @@ const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
 
     setRecording(false);
     setLoading(false);
+    setBlob(null);
   };
 
   const handleCancelAudio = async () => {
     try {
-      //@ts-ignore
-      stopRecording();
       setRecording(false);
+      if (mediaRecorderRef.current === null) {
+        throw new Error("MediaRecorder is null.");
+      }
+      stopRecording(mediaRecorderRef.current);
+      setBlob(null);
     } catch (err) {
       toastError(err as Error);
     }
@@ -652,11 +668,10 @@ const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
             </IconButton>
           ) : recording ? (
             <RecorderWrapperStyled>
-              {/* @ts-ignore */}
               <IconButton
                 aria-label="cancelRecording"
                 component="span"
-                fontSize="large"
+                size="large"
                 disabled={loading}
                 onClick={handleCancelAudio}
               >
@@ -673,7 +688,7 @@ const MessageInput = ({ ticketStatus }: { ticketStatus: string }) => {
               <IconButton
                 aria-label="sendRecordedAudio"
                 component="span"
-                onClick={handleUploadAudio}
+                onClick={handleAudioStopBeforeSend}
                 disabled={loading}
               >
                 <CheckCircleOutlineIcon
