@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+import { clsx } from "clsx";
 
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -30,6 +31,9 @@ interface ListItemLinkProps {
 
 function ListItemLink(props: ListItemLinkProps) {
   const { icon, primary, to, className } = props;
+  const location = useLocation();
+
+  const ticketMatch = location.pathname.includes("/tickets");
 
   const renderLink = React.useMemo(
     () =>
@@ -41,7 +45,16 @@ function ListItemLink(props: ListItemLinkProps) {
   );
 
   return (
-    <li>
+    <li
+      className={clsx([
+        {
+          "bg-gray-200": location.pathname === to,
+        },
+        {
+          "bg-gray-200": ticketMatch && to === "/tickets",
+        },
+      ])}
+    >
       <ListItem component={renderLink} className={className}>
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
         <ListItemText primary={primary} />
@@ -102,6 +115,7 @@ const MainListItems = (props: MainListItemsProps) => {
         to="/tickets"
         primary={i18n.t("mainDrawer.listItems.tickets")}
         icon={<WhatsAppIcon />}
+        className=""
       />
 
       <ListItemLink
