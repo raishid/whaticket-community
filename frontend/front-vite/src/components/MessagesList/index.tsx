@@ -67,8 +67,7 @@ const MessageLeftStyled = styled("div", {
   display: "block",
   position: "relative",
   "&:hover #messageActionsButton": {
-    display: "flex",
-    position: "absolute",
+    opacity: "90%",
     top: 0,
     right: 0,
   },
@@ -167,13 +166,16 @@ const QuotedSideColorRight = styled("span")({
 });
 
 const MessageActionsButtonStyled = styled(IconButton)({
-  display: "none",
-  position: "relative",
+  opacity: "0",
+  position: "absolute",
+  top: "0",
+  right: "0",
   color: "#999",
   zIndex: 1,
-  backgroundColor: "inherit",
-  opacity: "90%",
-  "&:hover, &.Mui-focusVisible": { backgroundColor: "inherit" },
+  backgroundColor: "transparent",
+  "&:hover, &.Mui-focusVisible": {
+    opacity: "90%",
+  },
 });
 
 const MessageContactNameStyled = styled("span", {
@@ -290,7 +292,7 @@ type Action =
   | { type: "UPDATE_MESSAGE"; payload: Message }
   | { type: "RESET"; payload?: undefined };
 
-const reducer = (state: Message[], action: Action): Message[] | undefined => {
+const reducer = (state: Message[], action: Action): Message[] => {
   if (action.type === "LOAD_MESSAGES") {
     const messages = action.payload;
     const newMessages = [] as any[];
@@ -334,6 +336,8 @@ const reducer = (state: Message[], action: Action): Message[] | undefined => {
   if (action.type === "RESET") {
     return [];
   }
+
+  return state;
 };
 
 type MessagesListProps = {
@@ -342,8 +346,7 @@ type MessagesListProps = {
 };
 
 const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
-  //@ts-ignore
-  const [messagesList, dispatch] = useReducer(reducer, []);
+  const [messagesList, dispatch] = useReducer(reducer, [] as Message[]);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -355,7 +358,7 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
     body: "",
     createdAt: "",
   });
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const currentTicketId = useRef(ticketId);
 
@@ -431,7 +434,7 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
     }
   };
 
-  const handleScroll = (e) => {
+  const handleScroll = (e: React.MouseEvent<HTMLElement>) => {
     if (!hasMore) return;
     const { scrollTop } = e.currentTarget;
 
@@ -452,10 +455,10 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
   };
 
   const handleOpenMessageOptionsMenu = (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.MouseEvent<HTMLElement>,
     message: Message
   ) => {
-    setAnchorEl(e.currentTarget as HTMLButtonElement);
+    setAnchorEl(e.currentTarget as HTMLElement);
     setSelectedMessage(message);
   };
 
