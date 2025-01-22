@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { parseISO, format, isSameDay } from "date-fns";
 
-import { makeStyles } from "@mui/styles";
 import { green } from "@mui/material/colors";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
@@ -34,36 +33,13 @@ const TicketStyled = styled(ListItemButton, {
   if (status) {
     return {
       position: "relative",
-      cursor: "pointer",
+      cursor: "unset",
     };
   }
 
   return {
     position: "relative",
   };
-});
-
-const NoTicketsDivStyled = styled("div")({
-  display: "flex",
-  height: "100px",
-  margin: 40,
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-});
-
-const NoTicketsTextStyled = styled("p")({
-  textAlign: "center",
-  color: "rgb(104, 121, 146)",
-  fontSize: "14px",
-  lineHeight: "1.4",
-});
-
-const NoTicketsTitleStyled = styled("h2")({
-  textAlign: "center",
-  fontSize: "16px",
-  fontWeight: 600,
-  margin: "0px",
 });
 
 const ContactNameWrapperStyled = styled("span")({
@@ -90,11 +66,10 @@ const NewMessagesCountStyled = styled(Badge)({
   alignSelf: "center",
   marginRight: 8,
   marginLeft: "auto",
-});
-
-const BadgeStyleStyled = styled("div")({
-  color: "white",
-  backgroundColor: green[500],
+  "& .MuiBadge-badge": {
+    color: "white",
+    backgroundColor: green[500],
+  },
 });
 
 const AcceptButtonStyled = styled(ButtonWithSpinner)({
@@ -126,99 +101,6 @@ const UserTagStyled = styled("div")({
   fontSize: "0.9em",
 });
 
-const useStyles = makeStyles((_theme) => ({
-  ticket: {
-    position: "relative",
-  },
-
-  pendingTicket: {
-    cursor: "unset",
-  },
-
-  noTicketsDiv: {
-    display: "flex",
-    height: "100px",
-    margin: 40,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  noTicketsText: {
-    textAlign: "center",
-    color: "rgb(104, 121, 146)",
-    fontSize: "14px",
-    lineHeight: "1.4",
-  },
-
-  noTicketsTitle: {
-    textAlign: "center",
-    fontSize: "16px",
-    fontWeight: 600,
-    margin: "0px",
-  },
-
-  contactNameWrapper: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-
-  lastMessageTime: {
-    justifySelf: "flex-end",
-  },
-
-  closedBadge: {
-    alignSelf: "center",
-    justifySelf: "flex-end",
-    marginRight: 32,
-    marginLeft: "auto",
-  },
-
-  contactLastMessage: {
-    paddingRight: 20,
-  },
-
-  newMessagesCount: {
-    alignSelf: "center",
-    marginRight: 8,
-    marginLeft: "auto",
-  },
-
-  badgeStyle: {
-    color: "white",
-    backgroundColor: green[500],
-  },
-
-  acceptButton: {
-    position: "absolute",
-    left: "50%",
-  },
-
-  ticketQueueColor: {
-    flex: "none",
-    width: "8px",
-    height: "100%",
-    position: "absolute",
-    top: "0%",
-    left: "0%",
-  },
-
-  userTag: {
-    position: "absolute",
-    marginRight: 5,
-    right: 5,
-    bottom: 5,
-    background: "#2576D2",
-    color: "#ffffff",
-    border: "1px solid #CCC",
-    padding: 1,
-    paddingLeft: 5,
-    paddingRight: 5,
-    borderRadius: 10,
-    fontSize: "0.9em",
-  },
-}));
-
 interface Ticket {
   id: number;
   status: string;
@@ -240,7 +122,6 @@ interface Ticket {
 }
 
 const TicketListItem = ({ ticket }: { ticket: Ticket }) => {
-  const classes = useStyles();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { ticketId } = useParams();
@@ -348,12 +229,7 @@ const TicketListItem = ({ ticket }: { ticket: Ticket }) => {
                 )}
               </ContactLastMessageStyled>
 
-              <NewMessagesCountStyled
-                badgeContent={ticket.unreadMessages}
-                classes={{
-                  badge: classes.badgeStyle,
-                }}
-              />
+              <NewMessagesCountStyled badgeContent={ticket.unreadMessages} />
             </ContactNameWrapperStyled>
           }
         />

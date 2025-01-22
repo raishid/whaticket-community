@@ -31,8 +31,8 @@ const TicketInfo: React.FC<TicketInfoProps> = ({
       style={{ cursor: "pointer" }}
       titleTypographyProps={{ noWrap: true }}
       subheaderTypographyProps={{ noWrap: true }}
-      avatar={<Avatar src={contact.profilePicUrl} alt="contact_image" />}
-      title={`${contact.name} #${ticket.id}`}
+      avatar={<Avatar src={contact?.profilePicUrl} alt="contact_image" />}
+      title={`${contact?.name} #${ticket.id}`}
       subheader={
         ticket.user &&
         `${i18n.t("messagesList.header.assignedTo")} ${ticket.user.name}`

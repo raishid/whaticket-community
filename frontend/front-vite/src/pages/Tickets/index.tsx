@@ -7,9 +7,10 @@ import TicketsManager from "../../components/TicketsManager/";
 import Ticket from "../../components/Ticket/";
 
 import { i18n } from "../../translate/i18n";
-import Hidden from "@mui/material/Hidden";
 
-const ChatContainerStyled = styled("div")(({ theme }) => ({
+const ChatContainerStyled = styled("div", {
+  name: "ChatContainerStyled",
+})(({ theme }) => ({
   flex: 1,
   // // backgroundColor: "#eee",
   // padding: theme.spacing(4),
@@ -18,27 +19,48 @@ const ChatContainerStyled = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
 }));
 
-const ChatPapperStyled = styled("div")(({ theme }) => ({
+const ChatPapperStyled = styled("div", {
+  name: "ChatPapperStyled",
+})(({ theme }) => ({
   display: "flex",
   height: "100%",
   backgroundColor: theme.palette.background.paper,
 }));
 
-const ContactsWrapperSmallStyled = styled(Grid)(({ theme }) => ({
-  display: "flex",
-  height: "100%",
-  flexDirection: "column",
-  overflowY: "hidden",
-  [theme.breakpoints.down("sm")]: {
-    display: "none",
-  },
-}));
+interface ContactsWrapperStyledProps {
+  dataTicketId?: string;
+}
 
-const MessagessWrapperStyled = styled(Grid)({
+const ContactsWrapperStyled = styled(Grid, {
+  name: "ContactsWrapperStyled",
+  shouldForwardProp: (prop) => prop !== "dataTicketId",
+})<ContactsWrapperStyledProps>(({ theme, dataTicketId }) => {
+  if (dataTicketId) {
+    return {
+      display: "flex",
+      height: "100%",
+      flexDirection: "column",
+      overflowY: "hidden",
+      [theme.breakpoints.down("sm")]: {
+        display: "none",
+      },
+    };
+  }
+  return {
+    display: "flex",
+    height: "100%",
+    flexDirection: "column",
+    overflowY: "hidden",
+  };
+});
+
+const MessagessWrapperStyled = styled(Grid, {
+  name: "MessagessWrapperStyled",
+})(() => ({
   display: "flex",
   height: "100%",
   flexDirection: "column",
-});
+}));
 
 const WelcomeMsgStyled = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -63,46 +85,36 @@ const Chat = () => {
             width: "100%",
           }}
         >
-          {/* <Grid item xs={4} className={classes.contactsWrapper}> */}
-          {ticketId ? (
-            <ContactsWrapperSmallStyled
-              size={{
-                xs: 12,
-                md: 4,
-              }}
-            />
-          ) : (
-            <Grid
-              size={{
-                xs: 12,
-                md: 4,
-              }}
-            >
-              <TicketsManager />
-            </Grid>
-          )}
-
+          <ContactsWrapperStyled
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+            dataTicketId={ticketId}
+          >
+            <TicketsManager />
+          </ContactsWrapperStyled>
           <MessagessWrapperStyled
             size={{
               xs: 12,
               md: 8,
             }}
           >
-            {/* <Grid item xs={8} className={classes.messagessWrapper}> */}
             {ticketId ? (
               <>
                 <Ticket />
               </>
             ) : (
-              <>
-                {/* @ts-ignore */}
-                <Hidden only={["sm", "xs"]}>
-                  <WelcomeMsgStyled>
-                    {/* <Paper square variant="outlined" className={classes.welcomeMsg}> */}
-                    <span>{i18n.t("chat.noTicketMessage")}</span>
-                  </WelcomeMsgStyled>
-                </Hidden>
-              </>
+              <WelcomeMsgStyled
+                sx={{
+                  display: {
+                    md: "none",
+                    xl: "none",
+                  },
+                }}
+              >
+                <span>{i18n.t("chat.noTicketMessage")}</span>
+              </WelcomeMsgStyled>
             )}
           </MessagessWrapperStyled>
         </Grid>

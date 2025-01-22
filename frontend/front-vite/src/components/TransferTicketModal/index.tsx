@@ -29,7 +29,7 @@ import { styled } from "@mui/material/styles";
 
 const FormControlMaxWidth = styled(FormControl)({
   width: "100%",
-})
+});
 
 const filterOptions = createFilterOptions({
   trim: true,
@@ -125,7 +125,7 @@ const TransferTicketModal: React.FC<TransferTicketModalProps> = ({
         userId?: string | null;
         queueId?: string;
         status?: string;
-        whatsappId?: string;
+        whatsappId?: string | number;
       } = {};
 
       if (selectedUser) {

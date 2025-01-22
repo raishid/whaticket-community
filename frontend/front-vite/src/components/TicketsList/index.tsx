@@ -29,23 +29,18 @@ const TicketsListStyled = styled(Paper)({
   // ...theme.scrollbarStyles,
   borderTop: "2px solid rgba(0, 0, 0, 0.12)",
 });
-const ticketsListHeaderStyled = styled(Paper)({
-  color: "rgb(67, 83, 105)",
-  zIndex: 2,
-  backgroundColor: "white",
-  borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-});
-const ticketsCountStyled = styled(Paper)({
-  fontWeight: "normal",
+const NoTicketsTextStyled = styled("p")({
+  textAlign: "center",
   color: "rgb(104, 121, 146)",
-  marginLeft: "8px",
   fontSize: "14px",
+  lineHeight: "1.4",
 });
-const NoTicketsTextStyled = styled("p")({ textAlign: "center", color: "rgb(104, 121, 146)", fontSize: "14px", lineHeight: "1.4" });
-const NoTicketsTitleStyled = styled("span")({ textAlign: "center", fontSize: "16px", fontWeight: 600, margin: "0px" });
+const NoTicketsTitleStyled = styled("span")({
+  textAlign: "center",
+  fontSize: "16px",
+  fontWeight: 600,
+  margin: "0px",
+});
 const NoTicketsDivStyled = styled("div")({
   display: "flex",
   height: "100px",
@@ -54,7 +49,6 @@ const NoTicketsDivStyled = styled("div")({
   alignItems: "center",
   justifyContent: "center",
 });
-
 
 interface Ticket {
   id: number;
@@ -171,7 +165,8 @@ interface TicketsListProps {
 }
 
 const TicketsList = (props: TicketsListProps) => {
-  const { status, searchParam, showAll, selectedQueueIds, updateCount, style } = props;
+  const { status, searchParam, showAll, selectedQueueIds, updateCount, style } =
+    props;
   const [pageNumber, setPageNumber] = useState(1);
   const [ticketsList, dispatch] = useReducer(reducer, []);
   const authContext = useContext(AuthContext);
@@ -208,7 +203,8 @@ const TicketsList = (props: TicketsListProps) => {
       (!ticket.userId || ticket.userId === user?.id || showAll) &&
       (!ticket.queueId || selectedQueueIds.indexOf(ticket.queueId) > -1);
 
-    const notBelongsToUserQueues = (ticket: Ticket) => ticket.queueId && selectedQueueIds.indexOf(ticket.queueId) === -1;
+    const notBelongsToUserQueues = (ticket: Ticket) =>
+      ticket.queueId && selectedQueueIds.indexOf(ticket.queueId) === -1;
 
     socket.on("connect", () => {
       if (status) {
@@ -293,8 +289,12 @@ const TicketsList = (props: TicketsListProps) => {
         <List style={{ paddingTop: 0 }}>
           {ticketsList.length === 0 && !loading ? (
             <NoTicketsDivStyled>
-              <NoTicketsTitleStyled>{i18n.t("ticketsList.noTicketsTitle")}</NoTicketsTitleStyled>
-              <NoTicketsTextStyled>{i18n.t("ticketsList.noTicketsMessage")}</NoTicketsTextStyled>
+              <NoTicketsTitleStyled>
+                {i18n.t("ticketsList.noTicketsTitle")}
+              </NoTicketsTitleStyled>
+              <NoTicketsTextStyled>
+                {i18n.t("ticketsList.noTicketsMessage")}
+              </NoTicketsTextStyled>
             </NoTicketsDivStyled>
           ) : (
             <>

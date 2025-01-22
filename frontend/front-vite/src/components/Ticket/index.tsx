@@ -3,9 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import { toast } from "react-toastify";
 import openSocket from "../../services/socket-io";
-import clsx from "clsx";
-
-import { makeStyles } from "@mui/styles";
 import Paper from "@mui/material/Paper";
 
 import ContactDrawer from "../ContactDrawer";
@@ -18,12 +15,13 @@ import api from "../../services/api";
 import { ReplyMessageProvider } from "../../context/ReplyingMessage/ReplyingMessageContext";
 import toastError from "../../errors/toastError";
 import type { Error } from "../../types/Error";
-import type { Theme } from "@mui/material/styles";
 import { styled } from "@mui/material/styles";
 
 const drawerWidth = 320;
 
-const RootStyled = styled("div")({
+const RootStyled = styled("div", {
+  name: "TicketRootStyled",
+})({
   display: "flex",
   height: "100%",
   position: "relative",
@@ -50,60 +48,34 @@ const TicketActionButtonsStyled = styled("div")(({ theme }) => ({
   },
 }));
 
-const MainWrapperStyled = styled("div")(({ theme }) => ({
-  flex: 1,
-  height: "100%",
-  display: "flex",
-  flexDirection: "column",
-  overflow: "hidden",
-  borderTopLeftRadius: 0,
-  borderBottomLeftRadius: 0,
-  borderLeft: "0",
-  marginRight: `-${theme.spacing(drawerWidth)}`,
-  transition: theme.transitions.create("margin", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-}));
+interface MainWrapperStyledProps {
+  drawOpen: boolean;
+}
 
-const MainWrapperShiftStyled = styled("div")(({ theme }) => ({
-  borderTopRightRadius: 0,
-  borderBottomRightRadius: 0,
-  transition: theme.transitions.create("margin", {
-    easing: theme.transitions.easing.easeOut,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  marginRight: 0,
-}));
+const MainWrapperStyled = styled(Paper, {
+  shouldForwardProp: (prop) => prop !== "drawOpen",
+})<MainWrapperStyledProps>(({ theme, drawOpen }) => {
+  if (drawOpen) {
+    return {
+      flex: 1,
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden",
+      borderTopLeftRadius: 0,
+      borderBottomLeftRadius: 0,
+      borderLeft: "0",
+      borderTopRightRadius: 0,
+      borderBottomRightRadius: 0,
+      transition: theme.transitions.create("margin", {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginRight: 0,
+    };
+  }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: "flex",
-    height: "100%",
-    position: "relative",
-    overflow: "hidden",
-  },
-
-  ticketInfo: {
-    maxWidth: "50%",
-    flexBasis: "50%",
-    [theme.breakpoints.down("sm")]: {
-      maxWidth: "80%",
-      flexBasis: "80%",
-    },
-  },
-  ticketActionButtons: {
-    maxWidth: "50%",
-    flexBasis: "50%",
-    display: "flex",
-    [theme.breakpoints.down("sm")]: {
-      maxWidth: "100%",
-      flexBasis: "100%",
-      marginBottom: "5px",
-    },
-  },
-
-  mainWrapper: {
+  return {
     flex: 1,
     height: "100%",
     display: "flex",
@@ -117,23 +89,12 @@ const useStyles = makeStyles((theme: Theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-  },
-
-  mainWrapperShift: {
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginRight: 0,
-  },
-}));
+  };
+});
 
 const Ticket = () => {
   const { ticketId } = useParams();
   const navigate = useNavigate();
-  const classes = useStyles();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -210,13 +171,7 @@ const Ticket = () => {
 
   return (
     <RootStyled id="drawer-container">
-      <Paper
-        variant="outlined"
-        elevation={0}
-        className={clsx(classes.mainWrapper, {
-          [classes.mainWrapperShift]: drawerOpen,
-        })}
-      >
+      <MainWrapperStyled variant="outlined" elevation={0} drawOpen={drawerOpen}>
         <TicketHeader loading={loading}>
           <TicketInfoStyled>
             <TicketInfo
@@ -236,7 +191,7 @@ const Ticket = () => {
           ></MessagesList>
           <MessageInput ticketStatus={ticket.status} />
         </ReplyMessageProvider>
-      </Paper>
+      </MainWrapperStyled>
       <ContactDrawer
         open={drawerOpen}
         handleDrawerClose={handleDrawerClose}

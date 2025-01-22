@@ -27,19 +27,18 @@ import { styled } from "@mui/material/styles";
 const RootStyled = styled("div")({
   display: "flex",
   flexWrap: "wrap",
-})
+});
 
 const MultFieldLineStyled = styled("div")(({ theme }) => ({
   display: "flex",
-    "& > *:not(:last-child)": {
-      marginRight: theme.spacing(1),
-    },
-}))
+  "& > *:not(:last-child)": {
+    marginRight: theme.spacing(1),
+  },
+}));
 
 const BtnWrapperStyled = styled(Button)({
   position: "relative",
-
-})
+});
 
 const ButtonProgressStyled = styled(CircularProgress)({
   color: green[500],
@@ -48,7 +47,7 @@ const ButtonProgressStyled = styled(CircularProgress)({
   left: "50%",
   marginTop: -12,
   marginLeft: -12,
-})
+});
 
 const SessionSchema = Yup.object().shape({
   name: Yup.string()
@@ -236,11 +235,7 @@ const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                   {whatsAppId
                     ? i18n.t("whatsappModal.buttons.okEdit")
                     : i18n.t("whatsappModal.buttons.okAdd")}
-                  {isSubmitting && (
-                    <ButtonProgressStyled
-                      size={24}
-                    />
-                  )}
+                  {isSubmitting && <ButtonProgressStyled size={24} />}
                 </BtnWrapperStyled>
               </DialogActions>
             </Form>

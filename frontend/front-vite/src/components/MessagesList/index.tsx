@@ -56,7 +56,9 @@ const CircleLoadingStyled = styled(CircularProgress)({
   marginTop: 12,
 });
 
-const MessageLeftStyled = styled("div")({
+const MessageLeftStyled = styled("div", {
+  name: "MessageLeftStyled",
+})({
   marginRight: 20,
   marginTop: 2,
   minWidth: 100,
@@ -110,7 +112,9 @@ const QuotedSideColorLeft = styled("span")({
   backgroundColor: "#6bcbef",
 });
 
-const MessageRightStyled = styled("div")({
+const MessageRightStyled = styled("div", {
+  name: "MessageRightStyled",
+})({
   marginLeft: 20,
   marginTop: 2,
   minWidth: 100,
@@ -172,22 +176,34 @@ const MessageActionsButtonStyled = styled(IconButton)({
   "&:hover, &.Mui-focusVisible": { backgroundColor: "inherit" },
 });
 
-const MessageContactNameStyled = styled("span")({
+const MessageContactNameStyled = styled("span", {
+  name: "MessageContactNameStyled",
+})({
   display: "flex",
   color: "#6bcbef",
   fontWeight: 500,
 });
 
-const TextContentItemStyled = styled("div")({
-  overflowWrap: "break-word",
-  padding: "3px 80px 6px 6px",
-});
+interface TextContentItemStyledProps {
+  isDeleted?: boolean;
+}
 
-const TextContentItemDeletedStyled = styled("div")({
-  fontStyle: "italic",
-  color: "rgba(0, 0, 0, 0.36)",
-  overflowWrap: "break-word",
-  padding: "3px 80px 6px 6px",
+const TextContentItemStyled = styled("div", {
+  name: "TextContentItemStyled",
+  shouldForwardProp: (prop) => prop !== "isDeleted",
+})<TextContentItemStyledProps>(({ isDeleted }) => {
+  if (isDeleted) {
+    return {
+      fontStyle: "italic",
+      color: "rgba(0, 0, 0, 0.36)",
+      overflowWrap: "break-word",
+      padding: "3px 80px 6px 6px",
+    };
+  }
+  return {
+    overflowWrap: "break-word",
+    padding: "3px 80px 6px 6px",
+  };
 });
 
 const MessageMediaStyled = styled("video")({
@@ -232,7 +248,9 @@ const AckIconsStyled = {
   marginLeft: 4,
 };
 
-const DeletedIconStyled = styled(Block)({
+const DeletedIconStyled = styled(Block, {
+  name: "DeletedIconStyled",
+})({
   fontSize: 18,
   verticalAlign: "middle",
   marginRight: 4,
@@ -630,91 +648,76 @@ const MessagesList: React.FC<MessagesListProps> = ({ ticketId, isGroup }) => {
 
   const renderMessages = () => {
     if (messagesList.length > 0) {
-      const viewMessagesList = messagesList.map(
-        (message: Message, index: number) => {
-          if (!message.fromMe) {
-            return (
-              <React.Fragment key={message.id}>
-                {renderDailyTimestamps(message, index)}
-                {renderMessageDivider(message, index)}
-                <MessageLeftStyled>
-                  {/* @ts-ignore */}
-                  <MessageActionsButtonStyled
-                    variant="contained"
-                    size="small"
-                    id="messageActionsButton"
-                    disabled={message.isDeleted}
-                    onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
-                  >
-                    <ExpandMore />
-                  </MessageActionsButtonStyled>
-                  {isGroup && (
-                    <MessageContactNameStyled>
-                      {message.contact?.name}
-                    </MessageContactNameStyled>
-                  )}
-                  {(message.mediaUrl ||
-                    message.mediaType === "location" ||
-                    message.mediaType === "vcard") &&
-                    //|| message.mediaType === "multi_vcard"
-                    checkMessageMedia(message)}
-                  <TextContentItemStyled>
-                    {message.quotedMsg && renderQuotedMessage(message)}
-                    <MarkdownWrapper>{message.body}</MarkdownWrapper>
-                    <TimestampStyled>
-                      {format(parseISO(message.createdAt), "HH:mm")}
-                    </TimestampStyled>
-                  </TextContentItemStyled>
-                </MessageLeftStyled>
-              </React.Fragment>
-            );
-          } else {
-            return (
-              <React.Fragment key={message.id}>
-                {renderDailyTimestamps(message, index)}
-                {renderMessageDivider(message, index)}
-                <MessageRightStyled>
-                  {/* @ts-ignore */}
-                  <MessageActionsButtonStyled
-                    variant="contained"
-                    size="small"
-                    id="messageActionsButton"
-                    disabled={message.isDeleted}
-                    onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
-                  >
-                    <ExpandMore />
-                  </MessageActionsButtonStyled>
-                  {(message.mediaUrl ||
-                    message.mediaType === "location" ||
-                    message.mediaType === "vcard") &&
-                    //|| message.mediaType === "multi_vcard"
-                    checkMessageMedia(message)}
-                  {message.isDeleted} ? (
-                  <TextContentItemDeletedStyled>
+      const viewMessagesList = messagesList.map((message, index) => {
+        if (!message.fromMe) {
+          return (
+            <React.Fragment key={message.id}>
+              {renderDailyTimestamps(message, index)}
+              {renderMessageDivider(message, index)}
+              <MessageLeftStyled>
+                <MessageActionsButtonStyled
+                  size="small"
+                  id="messageActionsButton"
+                  disabled={message.isDeleted}
+                  onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
+                >
+                  <ExpandMore />
+                </MessageActionsButtonStyled>
+                {isGroup && (
+                  <MessageContactNameStyled>
+                    {message.contact?.name}
+                  </MessageContactNameStyled>
+                )}
+                {(message.mediaUrl ||
+                  message.mediaType === "location" ||
+                  message.mediaType === "vcard") &&
+                  //|| message.mediaType === "multi_vcard"
+                  checkMessageMedia(message)}
+                <TextContentItemStyled>
+                  {message.quotedMsg && renderQuotedMessage(message)}
+                  <MarkdownWrapper>{message.body}</MarkdownWrapper>
+                  <TimestampStyled>
+                    {format(parseISO(message.createdAt), "HH:mm")}
+                  </TimestampStyled>
+                </TextContentItemStyled>
+              </MessageLeftStyled>
+            </React.Fragment>
+          );
+        } else {
+          return (
+            <React.Fragment key={message.id}>
+              {renderDailyTimestamps(message, index)}
+              {renderMessageDivider(message, index)}
+              <MessageRightStyled>
+                <MessageActionsButtonStyled
+                  size="small"
+                  id="messageActionsButton"
+                  disabled={message.isDeleted}
+                  onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
+                >
+                  <ExpandMore />
+                </MessageActionsButtonStyled>
+                {(message.mediaUrl ||
+                  message.mediaType === "location" ||
+                  message.mediaType === "vcard") &&
+                  //|| message.mediaType === "multi_vcard"
+                  checkMessageMedia(message)}
+                <TextContentItemStyled isDeleted={message.isDeleted}>
+                  {message.isDeleted && (
                     <DeletedIconStyled color="disabled" fontSize="small" />
-                    {message.quotedMsg && renderQuotedMessage(message)}
-                    <MarkdownWrapper>{message.body}</MarkdownWrapper>
-                    <TimestampStyled>
-                      {format(parseISO(message.createdAt), "HH:mm")}
-                      {renderMessageAck(message)}
-                    </TimestampStyled>
-                  </TextContentItemDeletedStyled>
-                  ) : (
-                  <TextContentItemDeletedStyled>
-                    {message.quotedMsg && renderQuotedMessage(message)}
-                    <MarkdownWrapper>{message.body}</MarkdownWrapper>
-                    <TimestampStyled>
-                      {format(parseISO(message.createdAt), "HH:mm")}
-                      {renderMessageAck(message)}
-                    </TimestampStyled>
-                  </TextContentItemDeletedStyled>
-                  )
-                </MessageRightStyled>
-              </React.Fragment>
-            );
-          }
+                  )}
+                  {message.quotedMsg && renderQuotedMessage(message)}
+                  <MarkdownWrapper>{message.body}</MarkdownWrapper>
+                  <TimestampStyled>
+                    {format(parseISO(message.createdAt), "HH:mm")}
+                    {renderMessageAck(message)}
+                  </TimestampStyled>
+                </TextContentItemStyled>
+              </MessageRightStyled>
+            </React.Fragment>
+          );
         }
-      );
+      });
       return viewMessagesList;
     } else {
       return <div>Say hello to your new contact!</div>;

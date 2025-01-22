@@ -48,12 +48,6 @@ const TabsHeaderStyled = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-const SettingsIconStyled = styled("div")({
-  alignSelf: "center",
-  marginLeft: "auto",
-  padding: 8,
-});
-
 const TabStyled = styled(Tab)({
   "&.MuiTab-root": {
     minWidth: 120,
@@ -95,14 +89,6 @@ const SearchInputStyled = styled(InputBase)(({ theme }) => ({
 
 const BadgeStyled = styled(Badge)({
   right: "-10px",
-});
-
-const ShowStyled = styled(SearchIcon)({
-  display: "block",
-});
-
-const HydeStyled = styled(SearchIcon)({
-  display: "none !important",
 });
 
 const TicketsManager = () => {
