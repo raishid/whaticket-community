@@ -35,7 +35,7 @@ services:
       dockerfile: ./Dockerfile
     environment:
       - VITE_BACKEND_URL=${BACKEND_URL}
-      - VITE_HOURS_CLOSE_TICKETS_AUTO=${CLOSE_TICKETS_AUTO}
+      - VITE_HOURS_CLOSE_TICKETS_AUTO=${HOURS_CLOSE_TICKETS_AUTO}
     networks:
       - whaticket
 
