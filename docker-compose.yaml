@@ -23,7 +23,7 @@ services:
       - ${BACKEND_PORT:-8080}:3000
     volumes:
       - ./backend/public/:/usr/src/app/public/
-      - ./backend/public/:/usr/src/app/dist/
+      - ./backend/dist/:/usr/src/app/dist/
       - ./backend/.wwebjs_auth/:/usr/src/app/.wwebjs_auth/
     networks:
       - whaticket
