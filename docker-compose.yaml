@@ -29,19 +29,13 @@ services:
 
   frontend:
     ports:
-      - ${FRONTEND_PORT:-3000}:80
-      - ${FRONTEND_SSL_PORT:-3001}:443
+      - ${FRONTEND_PORT:-3001}:80
     build:
       context: ./frontend
       dockerfile: ./Dockerfile
     environment:
-      - URL_BACKEND=backend:3000
-      - REACT_APP_BACKEND_URL=${BACKEND_URL:-http://localhost}:${PROXY_PORT:-8080}/
-      - FRONTEND_SERVER_NAME=${FRONTEND_SERVER_NAME}
-      - BACKEND_SERVER_NAME=${BACKEND_SERVER_NAME}
-    volumes:
-      - ./ssl/certs/:/etc/nginx/ssl/
-      - ./ssl/www/:/var/www/letsencrypt/
+      - VITE_BACKEND_URL=${BACKEND_URL}
+      - VITE_HOURS_CLOSE_TICKETS_AUTO=${CLOSE_TICKETS_AUTO}
     networks:
       - whaticket
 
