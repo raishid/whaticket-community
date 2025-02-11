@@ -1,0 +1,13 @@
+services:
+  frontend:
+    ports:
+      - ${FRONTEND_PORT:-3001}:80
+    build: .
+    environment:
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+      - VITE_HOURS_CLOSE_TICKETS_AUTO=${VITE_HOURS_CLOSE_TICKETS_AUTO}
+    networks:
+      - whaticket
+
+networks:
+  whaticket:

@@ -1,7 +1,10 @@
 services:
-
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DB_HOST: mysql
     environment:
       - DB_HOST=mysql
       - DB_USER=${DB_USER:-root}
@@ -16,14 +19,20 @@ services:
     ports:
       - ${BACKEND_PORT:-8080}:3000
     volumes:
-      - ./public/:/usr/src/app/public/
-      - ./.wwebjs_auth/:/usr/src/app/.wwebjs_auth/
+      - backend_volumen:/public/:/usr/src/app/public/
+      - backend_volumen:/.wwebjs_auth/:/usr/src/app/.wwebjs_auth/
+
+    depends_on:
+      - mysql
 
   mysql:
-    image: ${MYSQL_ENGINE:-mariadb}:${MYSQL_VERSION:-10.6}
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_bin    
+    image: mysql:8.0
+    command: --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --explicit_defaults_for_timestamp=1
+      --default-storage-engine=InnoDB
     volumes:
-      - ./.docker/data/:/var/lib/mysql
+      - backend_volumen:/mysql:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=${DB_NAME:-whaticket}
       - MYSQL_ROOT_PASSWORD=${DB_PASS}
@@ -38,3 +47,7 @@ services:
   #     - PMA_HOSTS=mysql
   #   ports:
   #     - ${PMA_PORT:-9000}:80
+  #
+volumes:
+  backend_volumen:
+    driver: local

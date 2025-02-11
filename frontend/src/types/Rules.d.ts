@@ -1,12 +1,12 @@
 export interface IRules {
   user: {
-    static: string[];,
+    static: string[];
     dynamic: string[];
   };
   admin: {
     static: string[];
     dynamic: {
-      [key: string]: (data: any) => boolean; 
-    }
+      [key: string]: (data: any) => boolean;
+    };
   };
 }

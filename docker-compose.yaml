@@ -1,14 +1,13 @@
-version: '3'
-
 networks:
   whaticket:
 
 services:
-
   backend:
     build:
       context: ./backend
       dockerfile: ./Dockerfile
+      args:
+        DB_HOST: mysql
     environment:
       - DB_HOST=mysql
       - DB_USER=root
@@ -47,8 +46,10 @@ services:
       - whaticket
 
   mysql:
-    image: ${MYSQL_ENGINE:-mariadb}:${MYSQL_VERSION:-10.6}
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_bin    
+    image: ${MYSQL_ENGINE:-mysql}:${MYSQL_VERSION:-8.0}
+    command: --collation-server=utf8mb4_unicode_ci
+      --explicit_defaults_for_timestamp=1
+      --default-storage-engine=InnoDB
     volumes:
       - ./.docker/data/:/var/lib/mysql
     environment:

@@ -1,8 +1,10 @@
-FROM node:18 as build-deps
+FROM node:18.20
 
 RUN apt-get update && apt-get install -y wget
 
-ENV DOCKERIZE_VERSION v0.6.1
+ENV DOCKERIZE_VERSION v0.9.2
+ARG DB_HOST
+
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
@@ -36,5 +38,5 @@ EXPOSE 3000
 
 ENTRYPOINT ["dumb-init", "--"]
 CMD dockerize -wait tcp://${DB_HOST}:3306 \
-  && npx sequelize db:migrate \
-  && node dist/server.js
+  && npx sequelize-cli db:migrate \
+  && npm start
