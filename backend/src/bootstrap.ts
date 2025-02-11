@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import path from "path";
 
 let pathEnv = ".env";
 
@@ -14,5 +15,5 @@ if (process.env.NDOE_ENV === "development") {
   pathEnv = ".env.development";
 }
 dotenv.config({
-  path: pathEnv
+  path: path.resolve(__dirname, pathEnv)
 });
