@@ -1,19 +1,16 @@
 import dotenv from "dotenv";
 import path from "path";
 
-let pathEnv = ".env";
+const pathEnv = "../env";
 
-if (process.env.NODE_ENV === "test") {
-  pathEnv = ".env.test";
-}
+const loadEnv = () => {
+  if (process.env.NODE_ENV === "coolify") {
+    dotenv.config();
+    return;
+  }
+  dotenv.config({
+    path: path.resolve(__dirname, pathEnv)
+  });
+};
 
-if (process.env.NODE_ENV === "coolify") {
-  pathEnv = "../../.env";
-}
-
-if (process.env.NDOE_ENV === "development") {
-  pathEnv = ".env.development";
-}
-dotenv.config({
-  path: path.resolve(__dirname, pathEnv)
-});
+loadEnv();
