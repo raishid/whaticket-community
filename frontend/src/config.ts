@@ -1,22 +1,4 @@
-declare global {
-  interface Window {
-    ENV?: { [key: string]: string };
-  }
-}
+const backendUrl = import.meta.env.VITE_BACKEND_URL as string;
+const closeTicketAuto = import.meta.env.VITE_CLOSE_TICKET_AUTO as string;
 
-function getConfig(name: string, defaultValue = null) {
-  // If inside a docker container, use window.ENV
-  if (window.ENV !== undefined) {
-    return window.ENV[name] || defaultValue;
-  }
-
-  return import.meta.env[name] || defaultValue;
-}
-
-export function getBackendUrl() {
-  return getConfig("VITE_BACKEND_URL");
-}
-
-export function getHoursCloseTicketsAuto() {
-  return getConfig("VITE_HOURS_CLOSE_TICKETS_AUTO");
-}
+export { backendUrl, closeTicketAuto };
