@@ -37,7 +37,7 @@ ENV CHROME_BIN=google-chrome-stable
 EXPOSE 3000
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["/bin/bash"]
-# CMD dockerize -wait tcp://${DB_HOST}:3306 \
-#   && npx sequelize-cli db:migrate \
-#   && npm start
+
+CMD dockerize -wait tcp://${DB_HOST}:3306 \
+  && npx sequelize-cli db:migrate \
+  && npm start
