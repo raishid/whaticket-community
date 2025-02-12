@@ -19,6 +19,7 @@ services:
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
       - PROXY_PORT=${PROXY_PORT:-8080}
       - CHROME_ARGS=--no-sandbox --disable-setuid-sandbox
+      - TZ=${TZ:-America/Fortaleza}
     ports:
       - ${BACKEND_PORT:-8080}:3000
     volumes:
@@ -40,18 +41,21 @@ services:
       - whaticket
 
   mysql:
-    image: ${MYSQL_ENGINE:-mysql}:${MYSQL_VERSION:-8.0}
-    command: --collation-server=utf8mb4_unicode_ci
-      --explicit_defaults_for_timestamp=1
-      --default-storage-engine=InnoDB
+    image: mysql:8.3
+    container_name: mysql-whaticket
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-whaticket}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-strongpassword}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+      TZ: ${TZ:-America/Fortaleza}
     volumes:
       - ./.docker/data/:/var/lib/mysql
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE:-whaticket}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-strongpassword}
-      - TZ=${TZ:-America/Fortaleza}
+      - ./docker/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     ports:
       - ${MYSQL_PORT:-3306}:3306
-    restart: always
     networks:
-      - whaticket
+      whaticket:
+        aliases:
+          - mysql
