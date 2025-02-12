@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getHoursCloseTicketsAuto } from "../../config";
+import { closeTicketAuto } from "../../config";
 import toastError from "../../errors/toastError";
 import type { Error } from "../../types/Error";
 
@@ -47,7 +47,7 @@ const useTickets = ({
           });
           setTickets(data.tickets);
 
-          let horasFecharAutomaticamente = getHoursCloseTicketsAuto();
+          let horasFecharAutomaticamente = closeTicketAuto;
 
           if (
             status === "open" &&
@@ -58,7 +58,7 @@ const useTickets = ({
           ) {
             let dataLimite = new Date();
             dataLimite.setHours(
-              dataLimite.getHours() - Number(horasFecharAutomaticamente)
+              dataLimite.getHours() - Number(horasFecharAutomaticamente),
             );
 
             data.tickets.forEach(
@@ -73,7 +73,7 @@ const useTickets = ({
                   if (dataUltimaInteracaoChamado < dataLimite)
                     closeTicket(ticket);
                 }
-              }
+              },
             );
           }
 
