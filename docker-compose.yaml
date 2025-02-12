@@ -34,6 +34,9 @@ services:
     build:
       context: ./frontend
       dockerfile: ./Dockerfile
+      args:
+        - VITE_BACKEND_URL=${BACKEND_URL}
+        - VITE_HOURS_CLOSE_TICKETS_AUTO=${HOURS_CLOSE_TICKETS_AUTO}
     environment:
       - VITE_BACKEND_URL=${BACKEND_URL}
       - VITE_HOURS_CLOSE_TICKETS_AUTO=${HOURS_CLOSE_TICKETS_AUTO}
